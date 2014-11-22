@@ -8,7 +8,7 @@ void Buffer::setContent(QString, QString){
 
 }
 
-QString Buffer::getContent() const{
+QString Buffer::getContent(QString) const{
 
 }
 
