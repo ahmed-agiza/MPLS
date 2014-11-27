@@ -9,8 +9,13 @@ void Buffer::setContent(QString key, QString data){
     _contentMap[key] = data;
 }
 
+<<<<<<< HEAD
 QString Buffer::getContent(QString key) const{
     return _contentMap[key];
+=======
+QString Buffer::getContent(QString) const{
+
+>>>>>>> origin/master
 }
 
 bool Buffer::hasContent(QString key) const{
