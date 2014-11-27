@@ -1,7 +1,7 @@
 #include "idexbuffer.h"
 
-IDEXBuffer::IDEXBuffer(QObject *parent, Component *sourceComponent, ProgramCounter *pc, Register *registerA, Register *registerB, int immediate)
-    :Buffer(parent, sourceComponent), _pc(pc), _registerA(registerA), _registerB(registerB), _immediate(immediate){
+IDEXBuffer::IDEXBuffer(QObject *parent, Component *sourceComponent)
+    :Buffer(parent, sourceComponent){
 }
 
 void IDEXBuffer::clear(){
@@ -11,27 +11,27 @@ void IDEXBuffer::clear(){
     _immediate = 0;
 }
 
-void IDEXBuffer::setProgramCounter(ProgramCounter *pc){
+void IDEXBuffer::setProgramCounter(ProgramCounter pc){
     _pc = pc;
 }
 
-ProgramCounter *IDEXBuffer::getProgramCounter() const{
+ProgramCounter IDEXBuffer::getProgramCounter() const{
     return _pc;
 }
 
-void IDEXBuffer::setRegisterA(Register *registerA){
+void IDEXBuffer::setRegisterA(Register registerA){
     _registerA = registerA;
 }
 
-Register *IDEXBuffer::getRegisterA() const{
+Register IDEXBuffer::getRegisterA() const{
     return _registerA;
 }
 
-void IDEXBuffer::setRegisterB(Register *registerB){
+void IDEXBuffer::setRegisterB(Register registerB){
     _registerB = registerB;
 }
 
-Register *IDEXBuffer::getRegisterB() const{
+Register IDEXBuffer::getRegisterB() const{
     return _registerB;
 }
 

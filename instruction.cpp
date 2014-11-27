@@ -3,22 +3,43 @@
 QMap<InstructionName, QString> Instruction::_instrNames;
 
 
-Instruction::Instruction(QObject * parent, InstructionName name, Register *rs, Register *rt, Register *rd, int immediate, ExecState state)
+Instruction::Instruction(QObject * parent, InstructionName name, int rs, int rt, int rd, int immediate, ExecState state)
     :QObject(parent), _name(name), _rs(rs), _rt(rt), _rd(rd), _immediate(immediate), _state(state){
     if(_instrNames.size() < 10)
         initializeNamesMap();
 }
 
+Instruction::Instruction(const Instruction &source)
+    :QObject(source.parent()), _name(source._name), _rs(source._rs), _rt(source._rt), _rd(source._rd), _immediate(source._immediate), _state(source._state){
+
+}
+
 Instruction::operator QString(){
     QString name = _instrNames[_name];
+    name += " ";
     if (isRInstruction()){
-
+        name += Register::getRegisterNameString(_rd);
+        name += ", ";
+        name += Register::getRegisterNameString(_rs);
+        name += ", ";
+        name += Register::getRegisterNameString(_rt);
     }else if (isIInstruction()){
         if (_name == InstructionName::LW || _name == InstructionName::SW){
-
+            name += Register::getRegisterNameString(_rt);
+            name += ", ";
+            name += QString::number(_immediate);
+            name +="(";
+            name += Register::getRegisterNameString(_rs);
+            name += ")";
+        }else{
+            name += Register::getRegisterNameString(_rt);
+            name += ", ";
+            name += Register::getRegisterNameString(_rs);
+            name += ", ";
+            name += QString::number(_immediate);
         }
     }else if (isJInstruction()){
-
+        name += _immediate;
     }
 
     return name;
@@ -49,6 +70,17 @@ bool Instruction::isJInstruction() const{
     return (JCHECK);
 }
 
+Instruction &Instruction::operator=(const Instruction &source){
+     _name = source._name;
+     _rs = source._rs;
+     _rt = source._rt;
+     _rd = source._rd;
+     _immediate = source._immediate;
+     _state = source._state;
+
+     return *this;
+}
+
 void Instruction::setName(InstructionName name){
     _name = name;
 }
@@ -65,27 +97,27 @@ ExecState Instruction::getState() const{
     return _state;
 }
 
-void Instruction::setRegisterRs(Register *rs){
+void Instruction::setRegisterRs(int rs){
     _rs = rs;
 }
 
-Register *Instruction::getRegisterRs() const{
+int Instruction::getRegisterRs() const{
     return _rs;
 }
 
-void Instruction::setRegisterRt(Register *rt){
+void Instruction::setRegisterRt(int rt){
     _rt = rt;
 }
 
-Register *Instruction::getRegisterRt() const{
+int Instruction::getRegisterRt() const{
     return _rt;
 }
 
-void Instruction::setRegisterRd(Register *rd){
+void Instruction::setRegisterRd(int rd){
     _rd = rd;
 }
 
-Register *Instruction::getRegisterRd() const{
+int Instruction::getRegisterRd() const{
     return _rd;
 }
 

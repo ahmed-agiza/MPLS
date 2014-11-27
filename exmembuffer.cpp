@@ -1,7 +1,7 @@
 #include "exmembuffer.h"
 
-EXMEMBuffer::EXMEMBuffer(QObject *parent, Component *sourceComponent, int branchTarget, int ALUResult, bool zeroFlag, Register *registerB)
-    :Buffer(parent, sourceComponent), _branchTarget(branchTarget), _ALUResult(ALUResult), _zeroFlag(zeroFlag), _registerB(registerB){
+EXMEMBuffer::EXMEMBuffer(QObject *parent, Component *sourceComponent)
+    :Buffer(parent, sourceComponent){
 
 }
 
@@ -36,11 +36,11 @@ bool EXMEMBuffer::getZeroFlag() const{
     return _zeroFlag;
 }
 
-void EXMEMBuffer::setRegisterB(Register *registerB){
+void EXMEMBuffer::setRegisterB(Register registerB){
     _registerB = registerB;
 }
 
-Register *EXMEMBuffer::getRegisterB() const{
+Register EXMEMBuffer::getRegisterB() const{
     return _registerB;
 }
 

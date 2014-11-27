@@ -9,7 +9,6 @@
 #include "alu.h"
 #include "datamemory.h"
 #include "programcounter.h"
-#include "register.h"
 
 class Core;
 
@@ -34,9 +33,9 @@ class Instruction :	public QObject {
     Q_OBJECT
 
     InstructionName _name;
-    Register *_rs;
-    Register *_rt;
-    Register *_rd;
+    int _rs;
+    int _rt;
+    int _rd;
     int _immediate;
     ExecState _state;
 
@@ -44,7 +43,8 @@ class Instruction :	public QObject {
     void initializeNamesMap();
 public:
 
-    Instruction(QObject * = 0, InstructionName = InstructionName::UNDEF, Register * = 0, Register * = 0, Register * = 0, int = 0, ExecState = ExecState::IF);
+    Instruction(QObject * = 0, InstructionName = InstructionName::UNDEF, int = 0, int = 0, int = 0, int = 0, ExecState = ExecState::IF);
+    Instruction(const Instruction &);
 
     bool isRInstruction() const;
     bool isIInstruction() const;
@@ -52,20 +52,22 @@ public:
 
     operator QString();
 
+    Instruction &operator=(const Instruction &);
+
     void setName(InstructionName);
     InstructionName getName() const;
 
     void setState(ExecState);
     ExecState getState() const;
 
-    void setRegisterRs(Register *);
-    Register *getRegisterRs() const;
+    void setRegisterRs(int);
+    int getRegisterRs() const;
 
-    void setRegisterRt(Register *);
-    Register *getRegisterRt() const;
+    void setRegisterRt(int);
+    int getRegisterRt() const;
 
-    void setRegisterRd(Register *);
-    Register *getRegisterRd() const;
+    void setRegisterRd(int);
+    int getRegisterRd() const;
 
     void setImmediate(int);
     int getImmediate() const;

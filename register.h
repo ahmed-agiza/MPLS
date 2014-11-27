@@ -17,11 +17,13 @@ protected:
 
     static QMap< unsigned int, RegisterName > _regNums;
     static QMap< RegisterName, QString > _regNames;
-    void _initializeRegistersMap();
+    static void _initializeRegistersMap();
 public:
     Register(QObject * = 0, Component * = 0, int = 0, RegisterName = RegisterName::UNDEF);
 
     Register(const Register &);
+
+    bool is(const Register &) const;
 
     QString getStringName() const;
     operator QString();
@@ -31,6 +33,8 @@ public:
 
     void setName(RegisterName);
     RegisterName getName() const;
+
+    Register &operator=(const Register &);
 
     operator int();
 

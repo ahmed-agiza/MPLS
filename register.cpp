@@ -5,14 +5,18 @@ QMap< RegisterName, QString > Register::_regNames;
 
 
 Register::Register(QObject *parent, Component *sourceComponent, int value, RegisterName name)
-    :Component(parent, sourceComponent), _value(value), _name(name){
+    :Component(parent, sourceComponent), _value(value), _name(name), _state(RegisterState::STABLE){
     if(_regNums.size() < 36)
         _initializeRegistersMap();
 }
 
 Register::Register(const Register &source)
-    :Component(source.parent(), source.getSourceComponent()), _value(source._value), _name(source._name){
+    :Component(source.parent(), source.getSourceComponent()), _value(source._value), _name(source._name), _state(source._state){
 
+}
+
+bool Register::is(const Register &other) const{
+    return _name != RegisterName::UNDEF && _name != RegisterName::BUFF && _name != RegisterName::CUSTOM && _name == other._name;
 }
 
 QString Register::getStringName() const{
@@ -117,6 +121,14 @@ RegisterName Register::getName() const{
     return _name;
 }
 
+Register &Register::operator=(const Register &source){
+    _value = source._value;
+    _name = source._name;
+    _state = source._state;
+
+    return *this;
+}
+
 Register::operator int(){
     return _value;
 }
@@ -186,14 +198,20 @@ Register::~Register(){
 }
 
 RegisterName Register::getRegisterName(int number){
+    if(_regNums.size() < 36)
+        _initializeRegistersMap();
     return _regNums[number];
 }
 
 QString Register::getRegisterNameString(int number){
+    if(_regNums.size() < 36)
+        _initializeRegistersMap();
     return _regNames[_regNums[number]];
 }
 
 QString Register::getRegisterNameString(RegisterName name){
+    if(_regNums.size() < 36)
+        _initializeRegistersMap();
     return _regNames[name];
 }
 
