@@ -2,8 +2,8 @@
 
 
 
-Core::Core(QObject *){
-
+Core::Core(QObject * parent)
+    :Component(parent){
 }
 
 void Core::run(){
@@ -65,6 +65,7 @@ bool Core::_ex(int index){
 
     return false;
 }
+
 
 bool Core::_mem(int index){
     Q_UNUSED(index);

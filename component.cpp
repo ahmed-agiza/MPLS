@@ -3,8 +3,7 @@
 int Component::_lastID;
 
 Component::Component(QObject *parent, Component *sourceComponent):
-    QObject(parent), _sourceComponent(sourceComponent), _state(State::FREE), _id(_lastID++),
-    _lockOwner(-1){
+    QObject(parent), _sourceComponent(sourceComponent), _state(State::FREE), _id(_lastID++), _lockOwner(-1){
 }
 
 Buffer * Component::getBuffer() const{
