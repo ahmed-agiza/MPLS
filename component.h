@@ -21,7 +21,7 @@ public:
 
     virtual Buffer * getBuffer() const;
 
-    void getID() const;
+    int getID() const;
 
     void setState(State);
     State getState() const;

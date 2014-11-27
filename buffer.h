@@ -13,7 +13,7 @@ public:
     Buffer(QObject * = 0, Component * = 0);
 
     void setContent(QString, QString);
-    QString getContent() const;
+    QString getContent(QString) const;
     bool hasContent(QString) const;
 
     virtual void clear() = 0;

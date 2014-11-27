@@ -1,6 +1,7 @@
 #include "core.h"
 
-Core::Core(QObject *){
+Core::Core(QObject * parent)
+    :Component(parent){
 
 }
 
@@ -21,15 +22,15 @@ void Core::gotoCycle(unsigned int){
 }
 
 unsigned int Core::getCycle() const{
-
+    return _cycle;
 }
 
 DataMemory * Core::getDataMemory() const{
-
+    return (_dMem);
 }
 
 RegisterFile *Core::getRegisterFile() const{
-
+    return (_regFile);
 }
 
 QList< int > Core::getRegistersDump(size_t, size_t) const{
