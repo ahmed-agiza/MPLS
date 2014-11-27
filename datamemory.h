@@ -11,12 +11,13 @@ class DataMemory : public Component
     QList< int > _values;
     bool _writeEnabled;
     size_t _address;
-    MEMWBBuffer * _buffer;
+    MEMWBBuffer *_buffer;
 
+    friend class Core;
 public:
     DataMemory(QObject * = 0, Component * = 0, size_t = 16, int = 0, bool = false, size_t = 0);
 
-    MEMWBBuffer * getBuffer() const override;
+    MEMWBBuffer *getBuffer() const override;
 
     void setAddress(size_t);
     size_t getAddress() const;

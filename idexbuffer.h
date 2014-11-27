@@ -9,9 +9,9 @@ class IDEXBuffer : public Buffer
 {
     Q_OBJECT
 
-    ProgramCounter * _pc;
-    Register * _registerA;
-    Register * _registerB;
+    ProgramCounter *_pc;
+    Register *_registerA;
+    Register *_registerB;
     int _immediate;
 
 public:
@@ -20,10 +20,10 @@ public:
     void clear() override;
 
     void setProgramCounter(ProgramCounter *);
-    ProgramCounter* getProgramCounter() const;
+    ProgramCounter *getProgramCounter() const;
 
     void setRegisterA(Register *);
-    Register* getRegisterA() const;
+    Register *getRegisterA() const;
 
     void setRegisterB(Register *);
     Register* getRegisterB() const;

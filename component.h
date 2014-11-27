@@ -12,16 +12,24 @@ class Component : public QObject
 {
     Q_OBJECT
 protected:
+Component *_sourceComponent;
     State _state;
-    Component * _sourceComponent;
     int _id;
     static int _lastID;
+    int _lockOwner;
 public:
-    Component(QObject * = 0, Component * = 0, State = State::FREE);
+    Component(QObject * = 0, Component * = 0);
 
     virtual Buffer * getBuffer() const;
 
-    void getID() const;
+    bool lock(int);
+    bool halfLock(int);
+    bool unlock(int);
+    int getLockOwnerID() const;
+    bool isLocked() const;
+    bool isHalfLocked() const;
+
+    int getID() const;
 
     void setState(State);
     State getState() const;

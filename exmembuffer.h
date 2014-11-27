@@ -11,9 +11,9 @@ class EXMEMBuffer : public Buffer
     int _branchTarget;
     int _ALUResult;
     bool _zeroFlag;
-    Register * _registerB;
+    Register *_registerB;
 public:
-    EXMEMBuffer(QObject * = 0, Component * = 0, int = 0, int = 0, bool = 0);
+    EXMEMBuffer(QObject * = 0, Component * = 0, int = 0, int = 0, bool = 0, Register * = 0);
 
     void clear() override;
 
@@ -27,7 +27,7 @@ public:
     bool getZeroFlag() const;
 
     void setRegisterB(Register *);
-    Register * getRegisterB() const;
+    Register *getRegisterB() const;
 
     ~EXMEMBuffer();
 

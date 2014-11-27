@@ -4,7 +4,7 @@
 #include "component.h"
 #include "exmembuffer.h"
 
-enum class Operation {UNDEF, ADD, SUB, OR, LW, SW, BEQ, BNE, J, SLT};
+enum class Operation {UNDEF, ADD, SUB, OR, SLT};
 
 class ALU : public Component
 {
@@ -12,8 +12,6 @@ class ALU : public Component
 
     int _operandA;
     int _operandB;
-    int _result;
-    bool _zeroFlag;
     Operation _operation;
     EXMEMBuffer * _buffer;
 
@@ -21,7 +19,7 @@ public:
 
     ALU(QObject * = 0, Component * = 0, int = 0, int = 0, Operation = Operation::UNDEF);
 
-    EXMEMBuffer * getBuffer() const;
+    EXMEMBuffer *getBuffer() const;
 
     void setOperandA(int);
     int getOperandA() const;
