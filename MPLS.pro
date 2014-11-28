@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     programcounter.cpp \
     register.cpp \
     registerfile.cpp \
-    simulator.cpp
+    simulator.cpp \
+    codeeditor.cpp \
+    syntaxhl.cpp
 
 HEADERS  += mainwindow.h \
     component.h \
@@ -45,8 +47,13 @@ HEADERS  += mainwindow.h \
     programcounter.h \
     register.h \
     registerfile.h \
-    simulator.h
+    simulator.h \
+    codeeditor.h \
+    syntaxhl.h
 
 FORMS    += mainwindow.ui
 
 QMAKE_CXXFLAGS += -std=c++11
+
+RESOURCES += \
+    qdarkstyle/style.qrc
