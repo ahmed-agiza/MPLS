@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QMap>
 #include "core.h"
 
 class Simulator : public QObject
@@ -13,7 +14,10 @@ class Simulator : public QObject
     QList<Instruction *> _instructions;
     Core *_core;
     bool _valid;
+    QMap< QString, InstructionName> _instructionNames;
+    int getRegisterNumber(QString s);
 
+    QString getInstructionRegex(QString);
 public:
     Simulator(QObject * = 0, QStringList = QStringList());
 
@@ -35,6 +39,9 @@ public:
 
     void setValid(bool valid);
 
+    void initializeInstuctionNamesMap();
+
+    static int getNumber(QString);
 signals:
     void ready(bool);
 

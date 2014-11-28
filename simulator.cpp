@@ -1,28 +1,132 @@
 #include "simulator.h"
 
-
+QString registerRegex("\\$((?:[12]?[\\d])|(?:3[012])|(?:zero)|(?:at)|(?:v[01])|(?:a[0-3])|(?:t\\d)|(?:s[0-7])|(?:k[01])|gp|fp|ra|sp)");
+QString commentRegex("#.*");
+QString labelRegex("[a-zA-Z_]\\w*");
+QString labelRegexCap("(" + labelRegex + "):");
+QString numberRegex("(0x[0-9a-fA-F]+|-?\\d+|0b[01]+)");
+QString whiteSpaceRegex("[\\t ]");
+QString optionalWhiteSpace = whiteSpaceRegex + "*";
+QString commaa = optionalWhiteSpace + "," + optionalWhiteSpace;
 
 Simulator::Simulator(QObject *parent, QStringList rawInstructions)
     :QObject(parent), _rawInstructions(rawInstructions), _valid(false){
+    initializeInstuctionNamesMap();
+}
 
+
+int Simulator::getRegisterNumber(QString s){
+    QRegExp numbers(QString("^[0-9]+$"));
+    if(numbers.indexIn(s) == 0) return s.toInt();
+    else return Register::getRegisterNumber(s);
+}
+
+QString Simulator::getInstructionRegex(QString instructionString){
+    return (QString("^") + optionalWhiteSpace + "(?:" + labelRegexCap + ")?" + optionalWhiteSpace + instructionString + optionalWhiteSpace + "(?:" + commentRegex + ")?$");
 }
 
 bool Simulator::parseInstructions(){
 
-    QRegExp registerRegex(QString("\\$((?:[12]?[\\d])|(?:3[012])|(?:zero)|(?:at)|(?:v[01])|(?:a[0-3])|(?:t\\d)|(?:s[0-7])|(?:k[01])|gp|fp|ra|sp)"), Qt::CaseInsensitive);
-    QRegExp commentRegex(QString("#.*"));
-    QRegExp labelRegex(QString("[a-zA-Z_]\\w*"));
-    QRegExp numberRegex(QString("(0x[0-9a-fA-F]+|-?\\d+|0b[01]+)"));
+    QList<QRegExp> instructionFormats;
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(add|xor|slt)") + whiteSpaceRegex + "+" + registerRegex + commaa + registerRegex + commaa + registerRegex), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(addi|ble)") + whiteSpaceRegex + "+" + registerRegex + commaa + registerRegex + commaa + numberRegex), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(sw|lw)") + whiteSpaceRegex + "+" + registerRegex + commaa + numberRegex + "?" + optionalWhiteSpace + "\\(" + optionalWhiteSpace + registerRegex + optionalWhiteSpace + "\\)"), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(ble)") + whiteSpaceRegex + "+" + registerRegex + commaa + registerRegex + commaa + "(" + labelRegex +")"), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(jr)") + whiteSpaceRegex + "+" + registerRegex), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(j|jal)") + whiteSpaceRegex + "+(" + labelRegex + ")" ), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(QString("(j|jal)") + whiteSpaceRegex + "+" + numberRegex ), Qt::CaseInsensitive));
 
-    foreach(const QString& line, _rawInstructions)
+
+    foreach(QString line, _rawInstructions)
     {
-        _instructions.append(new Instruction(this,InstructionName::ADD));
+        line = line.toLower();
+        if(instructionFormats[0].indexIn(line) == 0){   // add slt xor
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(5)),
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 0,
+                                                 ExecState::IF
+                                                 )
+                                 );
+        }else if(instructionFormats[1].indexIn(line) == 0){ // addi ble
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 0,
+                                                 Simulator::getNumber(instructionFormats[0].cap(5)),
+                                                 ExecState::IF
+                                                 )
+                                 );
+        }else if(instructionFormats[2].indexIn(line) == 0){ // sw lw
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(5)),
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 0,
+                                                 Simulator::getNumber(instructionFormats[0].cap(4)),
+                                                 ExecState::IF
+                                                 )
+                                 );
+        }else if(instructionFormats[3].indexIn(line) == 0){ // ble
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 0,
+                                                 Simulator::getNumber(instructionFormats[0].cap(5)),
+                                                 ExecState::IF
+                                                 )
+                                 );
+        }else if(instructionFormats[4].indexIn(line) == 0){ // jr
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 0,
+                                                 0,
+                                                 0,
+                                                 ExecState::IF
+                                                 )
+                                 );
+        }else if(instructionFormats[5].indexIn(line) == 0){ // j jal
+
+        }else if(instructionFormats[6].indexIn(line) == 0){ // j jal
+
+        }else{
+
+        }
     }
     return false;
 }
 
 void Simulator::setValid(bool valid){
     _valid = valid;
+}
+
+void Simulator::initializeInstuctionNamesMap(){
+    _instructionNames["add"] = InstructionName::ADD;
+    _instructionNames["addi"] = InstructionName::ADDI;
+    _instructionNames["ble"] = InstructionName::BLE;
+    _instructionNames["j"] = InstructionName::J;
+    _instructionNames["jal"] = InstructionName::JAL;
+    _instructionNames["jr"] = InstructionName::JR;
+    _instructionNames["lw"] = InstructionName::LW;
+    _instructionNames["slt"] = InstructionName::SLT;
+    _instructionNames["sw"] = InstructionName::SW;
+    _instructionNames["xor"] = InstructionName::XOR;
+}
+
+int Simulator::getNumber(QString s){
+    if(s.isEmpty()) return 0;
+    bool f;
+    s = s.toLower();
+    if(s.startsWith("0x"))
+        return s.mid(2).toUInt(&f,16);
+    else if(s.startsWith("0b"))
+        return s.mid(2).toUInt(&f,2);
+    else return s.toInt();
 }
 
 bool Simulator::isReady() const{

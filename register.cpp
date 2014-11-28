@@ -110,6 +110,38 @@ void Register::_initializeRegistersMap(){
     _regNames[RegisterName::CUSTOM] = "CUSTOM";
     _regNames[RegisterName::UNDEF] = "UNDEFs";
 
+    _regNumbers["zero"] = 0;
+    _regNumbers["at"] = 1;
+    _regNumbers["v0"] = 2;
+    _regNumbers["v1"] = 3;
+    _regNumbers["a0"] = 4;
+    _regNumbers["a1"] = 5;
+    _regNumbers["a2"] = 6;
+    _regNumbers["a3"] = 7;
+    _regNumbers["t0"] = 8;
+    _regNumbers["t1"] = 9;
+    _regNumbers["t2"] = 10;
+    _regNumbers["t3"] = 11;
+    _regNumbers["t4"] = 12;
+    _regNumbers["t5"] = 13;
+    _regNumbers["t6"] = 14;
+    _regNumbers["t7"] = 15;
+    _regNumbers["s0"] = 16;
+    _regNumbers["s1"] = 17;
+    _regNumbers["s2"] = 18;
+    _regNumbers["s3"] = 19;
+    _regNumbers["s4"] = 20;
+    _regNumbers["s5"] = 21;
+    _regNumbers["s6"] = 22;
+    _regNumbers["s7"] = 23;
+    _regNumbers["t8"] = 24;
+    _regNumbers["t9"] = 25;
+    _regNumbers["k0"] = 26;
+    _regNumbers["k1"] = 27;
+    _regNumbers["gp"] = 28;
+    _regNumbers["sp"] = 29;
+    _regNumbers["fp"] = 30;
+    _regNumbers["ra"] = 31;
 
 }
 
@@ -222,3 +254,8 @@ QString Register::getRegisterNameString(RegisterName name){
     return _regNames[name];
 }
 
+int Register::getRegisterNumber(QString name){
+    if(_regNums.size() < 36)
+        _initializeRegistersMap();
+    return _regNumbers[name];
+}

@@ -17,6 +17,7 @@ protected:
 
     static QMap< unsigned int, RegisterName > _regNums;
     static QMap< RegisterName, QString > _regNames;
+    static QMap< QString, int > _regNumbers;
     static void _initializeRegistersMap();
 public:
     Register(QObject * = 0, Component * = 0, int = 0, RegisterName = RegisterName::UNDEF);
@@ -74,6 +75,8 @@ public:
     static QString getRegisterNameString(int);
 
     static QString getRegisterNameString(RegisterName);
+
+    static int getRegisterNumber(QString);
 
 signals:
 
