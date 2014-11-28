@@ -23,6 +23,14 @@ QString Register::getStringName() const{
     return _regNames[_name];
 }
 
+void Register::setState(RegisterState state){
+    _state = state;
+}
+
+RegisterState Register::getState() const{
+    return _state;
+}
+
 Register::operator QString(){
      return getStringName();
 }
@@ -123,7 +131,6 @@ RegisterName Register::getName() const{
 
 Register &Register::operator=(const Register &source){
     _value = source._value;
-    _name = source._name;
     _state = source._state;
 
     return *this;

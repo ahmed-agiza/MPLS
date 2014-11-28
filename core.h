@@ -9,6 +9,8 @@
 #include "datamemory.h"
 
 
+
+
 class Core : public Component
 {
     Q_OBJECT
@@ -21,16 +23,15 @@ class Core : public Component
     DataMemory * _dMem;
     unsigned int _cycle;
     QList < Instruction *> _instrQueue;
+
     bool _if();
-    bool _id(int);
-    bool _ex(int);
-    bool _mem(int);
-    bool _wb(int);
 
+    void _constructComponents();
+
+    bool _execute(Instruction *, int &index);
 public:
-    Core(QObject * = 0);
 
-    void run();
+    Core(QObject * = 0,  QList<Instruction *> = QList<Instruction *> ());
 
     void nextCycle();
 

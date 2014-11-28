@@ -47,6 +47,11 @@ int ALU::getResult() const{
     case Operation::SLT:
         return (_operandA < _operandB);
         break;
+    case Operation::LE:
+        return (_operandA <= _operandB);
+        break;
+    case Operation::NOP:
+        return 0;
     case Operation::UNDEF:
     default:
         qDebug() << "Undefined operation";

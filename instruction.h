@@ -15,7 +15,7 @@ class Core;
 
 enum class InstructionName{UNDEF, ADD, ADDI, XOR, LW, SW, BLE, J, SLT, JAL, JR};
 
-enum class ExecState {UNDEF, IF, ID, EX, MEM, COMP};
+enum class ExecState {UNDEF, IF, ID, EX, MEM, WB, COMP};
 
 #define INSTR_FUNC_PARAMS ProgramCounter *, ALU *, Register *, Register *, Register *, int, DataMemory *, ExecState
 

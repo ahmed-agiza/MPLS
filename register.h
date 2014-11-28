@@ -28,6 +28,9 @@ public:
     QString getStringName() const;
     operator QString();
 
+    void setState(RegisterState);
+    RegisterState getState() const;
+
     void setValue(int);
     int getValue() const;
 
