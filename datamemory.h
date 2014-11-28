@@ -14,6 +14,7 @@ class DataMemory : public Component
     MEMWBBuffer *_buffer;
 
     friend class Core;
+    friend class MemoryModel;
 public:
     DataMemory(QObject * = 0, Component * = 0, size_t = 16, int = 0, bool = false, size_t = 0);
 

@@ -12,7 +12,7 @@ RegisterFile::RegisterFile(QObject *parent, Component *sourceComponent, size_t s
 
 void RegisterFile::_initialzeDefaultRegisters(){
     for (int i = 0; i < 32; i++){
-        _registers[i] = new Register(this, this, 0, Register::getRegisterName(i));
+        _registers.append(new Register(this, this, 0, Register::getRegisterName(i)));
     }
 
     _registers[28]->setValue(0x10008000);

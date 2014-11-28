@@ -39,7 +39,7 @@ Instruction::operator QString(){
             name += QString::number(_immediate);
         }
     }else if (isJInstruction()){
-        name += _immediate;
+        name += QString::number(_immediate * 4);
     }
 
     return name;

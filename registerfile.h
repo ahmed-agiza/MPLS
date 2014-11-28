@@ -19,6 +19,7 @@ class RegisterFile : public Component
     void _initialzeDefaultRegisters();
 
     friend class Core;
+    friend class RegisterModel;
 
 public:
     RegisterFile(QObject * = 0, Component * = 0, size_t = 16, bool = false);

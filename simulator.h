@@ -29,6 +29,8 @@ public:
 
     int getCurrentCycle() const;
 
+    Core *getCore() const;
+
     ~Simulator();
 
     void setValid(bool valid);

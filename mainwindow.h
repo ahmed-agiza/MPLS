@@ -6,6 +6,9 @@
 
 #include "simulator.h"
 #include "codeeditor.h"
+#include "registermodel.h"
+#include "memorymodel.h"
+#include "instructionmodel.h"
 
 namespace Ui {
 class MainWindow;

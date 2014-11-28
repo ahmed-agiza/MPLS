@@ -22,6 +22,7 @@ bool Simulator::isReady() const{
 
 bool Simulator::isComplete() const{
 
+    return true;
 }
 
 void Simulator::simulate(){
@@ -36,6 +37,10 @@ int Simulator::getCurrentCycle() const{
     if (_core)
         return _core->getCycle();
     return 0;
+}
+
+Core *Simulator::getCore() const{
+    return _core;
 }
 
 Simulator::~Simulator(){

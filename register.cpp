@@ -65,7 +65,7 @@ void Register::_initializeRegistersMap(){
     _regNums[34] = RegisterName::CUSTOM;
     _regNums[35] = _regNums[-1] = RegisterName::UNDEF;
 
-    _regNames[RegisterName::ZERO] = "$Zero";
+    _regNames[RegisterName::ZERO] = "$zero";
     _regNames[RegisterName::AT] = "$at";
     _regNames[RegisterName::V0] = "$v0";
     _regNames[RegisterName::V1] = "$v1";

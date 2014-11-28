@@ -3,8 +3,8 @@
 DataMemory::DataMemory(QObject *parent, Component *sourceComponent, size_t size, int defaultValue, bool writeEnabled, size_t address)
     :Component(parent, sourceComponent), _writeEnabled(writeEnabled), _address(address){
     _values.reserve(size);
-    for(int i = 0; i < _values.size(); i++)
-        _values[i] = defaultValue;
+    for(int i = 0; i < (int)size; i++)
+        _values.append(defaultValue);
 }
 
 MEMWBBuffer *DataMemory::getBuffer() const{

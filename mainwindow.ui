@@ -26,7 +26,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tabCodeEditor">
          <attribute name="title">
@@ -53,25 +53,22 @@
                <number>10</number>
               </property>
               <item>
-               <widget class="QTextEdit" name="txtConsole">
+               <widget class="QTableView" name="tblAssembled">
                 <property name="minimumSize">
                  <size>
-                  <width>800</width>
+                  <width>900</width>
                   <height>420</height>
                  </size>
                 </property>
-                <property name="toolTip">
-                 <string>Assembled Instructions</string>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
+                <property name="sizeAdjustPolicy">
+                 <enum>QAbstractScrollArea::AdjustIgnored</enum>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QTableView" name="tblAssembled">
-                <property name="toolTip">
-                 <string>Log</string>
+               <widget class="QTextEdit" name="txtConsole">
+                <property name="readOnly">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>

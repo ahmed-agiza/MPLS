@@ -1,17 +1,49 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), ui(new Ui::MainWindow), simulator(0), editor(new CodeEditor(this)), simulationRunning(false), isFileModified(false){
+    QMainWindow(parent), ui(new Ui::MainWindow), simulator(new Simulator(this)), editor(new CodeEditor(this)), simulationRunning(false), isFileModified(false){
     ui->setupUi(this);
     ui->twdCode->setCurrentIndex(0);
     ui->tabCodeEditor->layout()->addWidget(editor);
     QObject::connect(editor, SIGNAL(textChanged()), this, SLOT(fileModified()));
 
     installEventFilter(this);
+
+    ui->tblAssembled->horizontalHeader()->setStretchLastSection(true);
+    ui->tblRegisters->horizontalHeader()->setStretchLastSection(true);
+    ui->tblMemory->horizontalHeader()->setStretchLastSection(true);
+
+
+    //**************Dummy value for testing**************************
+    QList<Instruction *> *temp = new QList<Instruction *>;
+    temp->push_back(new Instruction(this, InstructionName::ADD, 2, 3, 4, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 10, 11, 21, 15));
+    temp->push_back(new Instruction(this, InstructionName::BLE, 14, 13, 14, 15));
+    temp->push_back(new Instruction(this, InstructionName::J, 5, 6, 7, 8));
+    temp->push_back(new Instruction(this, InstructionName::JAL, 1, 3, 7, 5));
+    temp->push_back(new Instruction(this, InstructionName::JR, 9, 3, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::LW, 0, 3, 5, 5));
+    temp->push_back(new Instruction(this, InstructionName::SW, 6, 3, 4, 8));
+    temp->push_back(new Instruction(this, InstructionName::SLT, 1, 3, 4, 5));
+
+    InstructionModel *insModel = new InstructionModel(this, temp);
+
+    ui->tblAssembled->setModel(insModel);
+    RegisterFile *regFile = new RegisterFile(this, 0, 32);
+    ProgramCounter *pc = new ProgramCounter(this, 0);
+    pc->setValue(10);
+    RegisterModel *regModel = new RegisterModel(this, regFile, pc);
+    ui->tblRegisters->setModel(regModel);
+
+    DataMemory *memory = new DataMemory(this, 0, 35, 7);
+    MemoryModel *memModel = new MemoryModel(this, memory);
+    ui->tblMemory->setModel(memModel);
+    //**************End test**************************
 }
 
 bool MainWindow::saveActiveFile(){

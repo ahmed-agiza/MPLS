@@ -30,7 +30,10 @@ SOURCES += main.cpp\
     registerfile.cpp \
     simulator.cpp \
     codeeditor.cpp \
-    syntaxhl.cpp
+    syntaxhl.cpp \
+    registermodel.cpp \
+    instructionmodel.cpp \
+    memorymodel.cpp
 
 HEADERS  += mainwindow.h \
     component.h \
@@ -49,7 +52,10 @@ HEADERS  += mainwindow.h \
     registerfile.h \
     simulator.h \
     codeeditor.h \
-    syntaxhl.h
+    syntaxhl.h \
+    registermodel.h \
+    instructionmodel.h \
+    memorymodel.h
 
 FORMS    += mainwindow.ui
 
