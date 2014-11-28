@@ -1,14 +1,13 @@
 #include "buffer.h"
 
-Buffer::Buffer(QObject * parent, Component * _sourceComponent)
-    :Component(parent,_sourceComponent,State::FREE){
-    this->_sourceComponent = _sourceComponent;
+Buffer::Buffer(QObject *parent, Component *sourceComponent)
+    :Component(parent, sourceComponent){
+
 }
 
-void Buffer::setContent(QString key, QString data){
-    _contentMap[key] = data;
+void Buffer::setContent(QString key, QString value){
+    _contentMap[key] = value;
 }
-
 
 QString Buffer::getContent(QString key) const{
     return _contentMap[key];

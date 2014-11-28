@@ -1,35 +1,32 @@
 #include "alu.h"
 
-ALU::ALU(QObject * parent, Component * _sourceComponent, int _operandA, int _operandB, Operation _operation)
-    : Component(parent, _sourceComponent, State::FREE){
-    this->_sourceComponent = _sourceComponent;
-    this->_operandA = _operandA;
-    this->_operandB = _operandB;
-    this->_operation = _operation;
+ALU::ALU(QObject *parent, Component *sourceComponent, int operandA, int operandB, Operation operation):
+Component(parent, sourceComponent), _operandA(operandA), _operandB(operandB), _operation(operation){
+    _buffer = new EXMEMBuffer(this, this);
 }
 
-EXMEMBuffer * ALU::getBuffer() const{
+EXMEMBuffer *ALU::getBuffer() const{
     return _buffer;
 }
 
-void ALU::setOperandA(int _operandA){
-    this->_operandA = _operandA;
+void ALU::setOperandA(int operandA){
+    _operandA = operandA;
 }
 
 int ALU::getOperandA() const{
     return _operandA;
 }
 
-void ALU::setOperandB(int _operandB){
-    this->_operandB = _operandB;
+void ALU::setOperandB(int operandB){
+    _operandB = operandB;
 }
 
 int ALU::getOperandB() const{
     return _operandB;
 }
 
-void ALU::setOperation(Operation _operation){
-    this->_operation = _operation;
+void ALU::setOperation(Operation operation){
+    _operation = operation;
 }
 
 Operation ALU::getOperation() const{
@@ -37,11 +34,28 @@ Operation ALU::getOperation() const{
 }
 
 int ALU::getResult() const{
-    return _result;
+    switch(_operation){
+    case Operation::ADD:
+        return (_operandA + _operandB);
+        break;
+    case Operation::SUB:
+        return (_operandA - _operandB);
+        break;
+    case Operation::OR:
+        return (_operandA | _operandB);
+        break;
+    case Operation::SLT:
+        return (_operandA < _operandB);
+        break;
+    case Operation::UNDEF:
+    default:
+        qDebug() << "Undefined operation";
+        return 0;
+    }
 }
 
 bool ALU::getZeroFlag() const{
-    return _zeroFlag;
+    return (_operandA == _operandB);
 }
 
 ALU::~ALU(){

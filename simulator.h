@@ -12,17 +12,31 @@ class Simulator : public QObject
     QStringList _rawInstructions;
     QList<Instruction *> _instructions;
     Core *_core;
+    bool _valid;
 
 public:
     Simulator(QObject * = 0, QStringList = QStringList());
 
     bool parseInstructions();
 
+    bool isReady() const;
+
+    bool isComplete() const;
+
     void simulate();
+
+    void nextCycle();
+
+    int getCurrentCycle() const;
+
+    Core *getCore() const;
 
     ~Simulator();
 
+    void setValid(bool valid);
+
 signals:
+    void ready(bool);
 
 public slots:
 

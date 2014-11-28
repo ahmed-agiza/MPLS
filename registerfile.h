@@ -10,19 +10,21 @@ class RegisterFile : public Component
 {
     Q_OBJECT
 
-    QList< Register > _registers;
+    QList< Register *> _registers;
     size_t _readAddressA, _readAddressB, _writeAddress;
+    int _writeData;
     bool _writeEnabled;
-    IDEXBuffer * _buffer;
-    static QMap< unsigned int, RegisterName > _regNums;
-    static QMap< unsigned int, RegisterName > _regNumsStrings;
-    static QMap< RegisterName, QString > _regNamesStrings;
-    void _initializeRegisters();
+    IDEXBuffer *_buffer;
+
+    void _initialzeDefaultRegisters();
+
+    friend class Core;
+    friend class RegisterModel;
 
 public:
     RegisterFile(QObject * = 0, Component * = 0, size_t = 16, bool = false);
 
-    IDEXBuffer * getBuffer() const override;
+    IDEXBuffer *getBuffer() const override;
 
     void setReadAddressA(size_t);
     size_t getReadAddressA() const;
@@ -40,14 +42,14 @@ public:
 
     int getReadDataB() const;
 
-    bool writeData(int data);
+    void setWriteData(int);
     int getWriteData() const;
+
+    bool writeData();
+
 
     ~RegisterFile() ;
 
-    static QString getRegisterName(int);
-
-    static QString getRegisterName(RegisterName);
 
 signals:
 
