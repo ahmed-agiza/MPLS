@@ -15,9 +15,22 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    Ui::MainWindow *ui;
+    Simulator *simulator;
+    CodeEditor *editor;
+    bool simulationRunning;
+    bool isFileModified;
+    QString openFilePath;
+
+protected:
+    void closeEvent(QCloseEvent *);
+    bool eventFilter(QObject *, QEvent *);
+
 public:
     explicit MainWindow(QWidget *parent = 0);
 
+    bool saveActiveFile();
+    bool saveActiveFileAs();
     ~MainWindow();
 
 private slots:
@@ -41,10 +54,11 @@ private slots:
 
     void on_actionStopSimulation_triggered();
 
-private:
-    Ui::MainWindow *ui;
-    Simulator simulator;
-    CodeEditor *editor;
+    void enableSimulation();
+    void refreshSimulationActions();
+
+    void fileModified();
+
 };
 
 #endif // MAINWINDOW_H

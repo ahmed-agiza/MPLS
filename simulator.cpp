@@ -20,8 +20,22 @@ bool Simulator::isReady() const{
     return _valid;
 }
 
+bool Simulator::isComplete() const{
+
+}
+
 void Simulator::simulate(){
 
+}
+
+void Simulator::nextCycle(){
+
+}
+
+int Simulator::getCurrentCycle() const{
+    if (_core)
+        return _core->getCycle();
+    return 0;
 }
 
 Simulator::~Simulator(){

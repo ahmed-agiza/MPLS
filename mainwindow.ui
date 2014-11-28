@@ -63,6 +63,9 @@
                 <property name="toolTip">
                  <string>Assembled Instructions</string>
                 </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
@@ -159,7 +162,6 @@
     <property name="title">
      <string>Assembly</string>
     </property>
-    <addaction name="actionAssemble"/>
     <addaction name="separator"/>
     <addaction name="actionStartSimulation"/>
     <addaction name="actionNextCycle"/>
@@ -182,6 +184,7 @@
    <addaction name="actionSave"/>
    <addaction name="actionSaveAs"/>
    <addaction name="separator"/>
+   <addaction name="actionAssemble"/>
    <addaction name="actionStartSimulation"/>
    <addaction name="actionNextCycle"/>
    <addaction name="actionStopSimulation"/>

@@ -21,7 +21,13 @@ public:
 
     bool isReady() const;
 
+    bool isComplete() const;
+
     void simulate();
+
+    void nextCycle();
+
+    int getCurrentCycle() const;
 
     ~Simulator();
 
