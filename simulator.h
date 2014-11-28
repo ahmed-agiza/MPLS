@@ -10,6 +10,28 @@ class Simulator : public QObject
 {
     Q_OBJECT
 
+    class MissingLabel{
+    private:
+        QString _label;
+        int _address;
+        int _lineNumber;
+    public:
+        MissingLabel(QString label, int address, int lineNumber): _label(label), _address(address), _lineNumber(lineNumber){}
+        QString getLabel() const{return _label;}
+        int getAddress() const{return _address;}
+        int getLineNumber() const{return _lineNumber;}
+    };
+
+    class ParsingError{
+    private:
+        int _lineNumber;
+        QString _errorMessage;
+    public:
+        ParsingError(QString errorMessage, int lineNumber): _errorMessage(errorMessage), _lineNumber(lineNumber){}
+        QString getErrorMessage() const{return _errorMessage;}
+        int getLineNumber() const{return _lineNumber;}
+    };
+
     QStringList _rawInstructions;
     QList<Instruction *> _instructions;
     Core *_core;

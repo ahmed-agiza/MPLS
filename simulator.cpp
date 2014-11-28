@@ -16,6 +16,7 @@ Simulator::Simulator(QObject *parent, QStringList rawInstructions)
 
 
 int Simulator::getRegisterNumber(QString s){
+    s = tolower(s);
     QRegExp numbers(QString("^[0-9]+$"));
     if(numbers.indexIn(s) == 0) return s.toInt();
     else return Register::getRegisterNumber(s);
@@ -35,12 +36,22 @@ bool Simulator::parseInstructions(){
     instructionFormats.append(QRegExp(getInstructionRegex(QString("(jr)") + whiteSpaceRegex + "+" + registerRegex), Qt::CaseInsensitive));
     instructionFormats.append(QRegExp(getInstructionRegex(QString("(j|jal)") + whiteSpaceRegex + "+(" + labelRegex + ")" ), Qt::CaseInsensitive));
     instructionFormats.append(QRegExp(getInstructionRegex(QString("(j|jal)") + whiteSpaceRegex + "+" + numberRegex ), Qt::CaseInsensitive));
+    instructionFormats.append(QRegExp(getInstructionRegex(""), Qt::CaseInsensitive));
 
+    QMap<QString, int> symbolTable;
+    QList<MissingLabel> missingJumps;
+    QList<MissingLabel> missingBranches;
 
+    QList<ParsingError> errorList;
+    int instructionNumber = 0;
+    int lineNumber = 0;
     foreach(QString line, _rawInstructions)
     {
         line = line.toLower();
         if(instructionFormats[0].indexIn(line) == 0){   // add slt xor
+            if(instructionFormats[0].cap(1).size() > 0){
+                symbolTable[instructionFormats[0].cap(1)] = instructionNumber;
+            }
             _instructions.append(new Instruction(this,
                                                  _instructionNames[instructionFormats[0].cap(2)],
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
@@ -50,7 +61,11 @@ bool Simulator::parseInstructions(){
                                                  ExecState::IF
                                                  )
                                  );
+            instructionNumber++;
         }else if(instructionFormats[1].indexIn(line) == 0){ // addi ble
+            if(instructionFormats[1].cap(1).size() > 0){
+                symbolTable[instructionFormats[1].cap(1)] = instructionNumber;
+            }
             _instructions.append(new Instruction(this,
                                                  _instructionNames[instructionFormats[0].cap(2)],
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
@@ -60,7 +75,11 @@ bool Simulator::parseInstructions(){
                                                  ExecState::IF
                                                  )
                                  );
+            instructionNumber++;
         }else if(instructionFormats[2].indexIn(line) == 0){ // sw lw
+            if(instructionFormats[2].cap(1).size() > 0){
+                symbolTable[instructionFormats[2].cap(1)] = instructionNumber;
+            }
             _instructions.append(new Instruction(this,
                                                  _instructionNames[instructionFormats[0].cap(2)],
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(5)),
@@ -70,17 +89,31 @@ bool Simulator::parseInstructions(){
                                                  ExecState::IF
                                                  )
                                  );
+            instructionNumber++;
         }else if(instructionFormats[3].indexIn(line) == 0){ // ble
+            if(instructionFormats[3].cap(1).size() > 0){
+                symbolTable[instructionFormats[3].cap(1)] = instructionNumber;
+            }
             _instructions.append(new Instruction(this,
                                                  _instructionNames[instructionFormats[0].cap(2)],
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[0].cap(5)),
+                                                 0,
                                                  ExecState::IF
                                                  )
                                  );
+
+            if(symbolTable.contains(instructionFormats[0].cap(5))){
+                _instructions[_instructions.size() - 1]->setImmediate(symbolTable[instructionFormats[0].cap(5)] - (instructionNumber + 1));
+            }else{
+                missingBranches.append(MissingLabel(instructionFormats[0].cap(5), instructionNumber, lineNumber));
+            }
+            instructionNumber++;
         }else if(instructionFormats[4].indexIn(line) == 0){ // jr
+            if(instructionFormats[4].cap(1).size() > 0){
+                symbolTable[instructionFormats[4].cap(1)] = instructionNumber;
+            }
             _instructions.append(new Instruction(this,
                                                  _instructionNames[instructionFormats[0].cap(2)],
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
@@ -90,15 +123,73 @@ bool Simulator::parseInstructions(){
                                                  ExecState::IF
                                                  )
                                  );
+            instructionNumber++;
         }else if(instructionFormats[5].indexIn(line) == 0){ // j jal
+            if(instructionFormats[5].cap(1).size() > 0){
+                symbolTable[instructionFormats[5].cap(1)] = instructionNumber;
+            }
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 0,
+                                                 0,
+                                                 0,
+                                                 0,
+                                                 ExecState::IF
+                                                 )
+                                 );
 
+            if(symbolTable.contains(instructionFormats[0].cap(3))){
+                _instructions[_instructions.size() - 1]->setImmediate(symbolTable[instructionFormats[0].cap(3)]);
+            }else{
+                missingJumps.append(MissingLabel(instructionFormats[0].cap(3), instructionNumber, lineNumber));
+            }
+            instructionNumber++;
         }else if(instructionFormats[6].indexIn(line) == 0){ // j jal
-
+            if(instructionFormats[6].cap(1).size() > 0){
+                symbolTable[instructionFormats[6].cap(1)] = instructionNumber;
+            }
+            _instructions.append(new Instruction(this,
+                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 0,
+                                                 0,
+                                                 0,
+                                                 Simulator::getNumber(instructionFormats[0].cap(3)),
+                                                 ExecState::IF
+                                                 )
+                                 );
+            instructionNumber++;
+        }else if (instructionFormats[7].indexIn(line) == 0){
+            if(instructionFormats[7].cap(1).size() > 0){
+                symbolTable[instructionFormats[7].cap(1)] = instructionNumber;
+            }
         }else{
+            errorList.append(ParsingError("Syntax Error", lineNumber));
+        }
+        lineNumber++;
+    }
 
+    foreach(const MissingLabel& missingjmp, missingJumps){
+        if(symbolTable.contains(missingjmp.getLabel())){
+            _instructions[missingjmp.getAddress()]->setImmediate(symbolTable[missingjmp.getLabel()]);
+        }else{
+            errorList.append(ParsingError(QString("Label \"") + missingjmp.getLabel() + "\" was not found", missingjmp.getLineNumber()));
         }
     }
-    return false;
+
+    foreach(const MissingLabel& missingbrn, missingBranches){
+        if(symbolTable.contains(missingbrn.getLabel())){
+            _instructions[missingbrn.getAddress()]->setImmediate(symbolTable[missingbrn.getLabel()] - (missingbrn.getAddress() + 1));
+        }else{
+            errorList.append(ParsingError(QString("Label \"") + missingbrn.getLabel() + "\" was not found", missingbrn.getLineNumber()));
+        }
+    }
+
+
+    foreach (const ParsingError& pError, errorList) {
+        qDebug() << pError.getLineNumber() << "\t" << pError.getErrorMessage();
+    }
+
+    return (errorList.size() == 0);
 }
 
 void Simulator::setValid(bool valid){
