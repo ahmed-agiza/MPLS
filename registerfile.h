@@ -26,6 +26,8 @@ public:
 
     IDEXBuffer *getBuffer() const override;
 
+    Register* operator[](int) const;
+
     void setReadAddressA(size_t);
     size_t getReadAddressA() const;
 

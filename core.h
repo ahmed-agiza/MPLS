@@ -51,6 +51,7 @@ public:
 
     ~Core();
 
+    void _id(bool proceed, Instruction *instruction);
 signals:
 
 public slots:

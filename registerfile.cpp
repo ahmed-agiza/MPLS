@@ -5,6 +5,7 @@
 RegisterFile::RegisterFile(QObject *parent, Component *sourceComponent, size_t size, bool writeEnabled)
     :Component(parent, sourceComponent), _writeEnabled(writeEnabled){
     _registers.reserve(size);
+    qDebug() << "Size: " << size;
     if (size >= 32)
         _initialzeDefaultRegisters();
     _buffer = new IDEXBuffer(this, this);
@@ -17,10 +18,21 @@ void RegisterFile::_initialzeDefaultRegisters(){
 
     _registers[28]->setValue(0x10008000);
     _registers[29]->setValue(0x7FFFEFFC);
+    qDebug() << _registers.size();
 }
 
 IDEXBuffer *RegisterFile::getBuffer() const{
     return _buffer;
+}
+
+
+
+Register *RegisterFile::operator[](int index) const{
+    if (index < 0 || index >= _registers.size()){
+        qDebug() << index << "Out of range";
+        exit(1);
+    }
+    return _registers[index];
 }
 
 void RegisterFile::setReadAddressA(size_t readAddressA){
@@ -80,7 +92,8 @@ bool RegisterFile::writeData(){
         qDebug() << "Invalid index";
         return false;
     }
-    *(_registers[_writeAddress]) = _writeData;
+    if(_writeAddress != 0)
+        *(_registers[_writeAddress]) = _writeData;
     return true;
 }
 

@@ -25,7 +25,7 @@ enum class ExecState {UNDEF, IF, ID, EX, MEM, WB, COMP};
 
 #define RCHECK _name == InstructionName::ADD || _name == InstructionName::JR || _name == InstructionName::SLT
 
-#define ICHECK _name == InstructionName::BLE || _name == InstructionName::LW || _name == InstructionName::SW
+#define ICHECK _name == InstructionName::ADDI || _name == InstructionName::BLE || _name == InstructionName::LW || _name == InstructionName::SW
 
 #define JCHECK _name == InstructionName::J || _name == InstructionName::JAL
 
@@ -51,6 +51,7 @@ public:
     bool isJInstruction() const;
 
     operator QString();
+    QString toString() const;
 
     Instruction &operator=(const Instruction &);
 
@@ -73,6 +74,8 @@ public:
     int getImmediate() const;
 
     ~Instruction();
+
+    static QString stageString(ExecState);
 
 signals:
 

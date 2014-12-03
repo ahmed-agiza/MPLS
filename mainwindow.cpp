@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     DataMemory *memory = new DataMemory(this, 0, 35, 7);
     MemoryModel *memModel = new MemoryModel(this, memory);
     ui->tblMemory->setModel(memModel);
+
+    core = new Core(this, *temp);
     //**************End test**************************
 }
 
@@ -203,8 +205,9 @@ void MainWindow::on_actionStartSimulation_triggered(){
 }
 
 void MainWindow::on_actionNextCycle_triggered(){
-    simulator->nextCycle();
-    ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
+    //simulator->nextCycle();
+    //ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
+    core->executeCycle();
 }
 
 void MainWindow::on_actionStopSimulation_triggered(){

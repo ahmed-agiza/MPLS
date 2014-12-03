@@ -32,6 +32,8 @@ protected:
 public:
     explicit MainWindow(QWidget *parent = 0);
 
+    Core *core;
+
     bool saveActiveFile();
     bool saveActiveFileAs();
     ~MainWindow();
