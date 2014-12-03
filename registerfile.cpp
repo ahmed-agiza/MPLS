@@ -5,7 +5,6 @@
 RegisterFile::RegisterFile(QObject *parent, Component *sourceComponent, size_t size, bool writeEnabled)
     :Component(parent, sourceComponent), _writeEnabled(writeEnabled){
     _registers.reserve(size);
-    qDebug() << "Size: " << size;
     if (size >= 32)
         _initialzeDefaultRegisters();
     _buffer = new IDEXBuffer(this, this);
@@ -18,7 +17,8 @@ void RegisterFile::_initialzeDefaultRegisters(){
 
     _registers[28]->setValue(0x10008000);
     _registers[29]->setValue(0x7FFFEFFC);
-    qDebug() << _registers.size();
+    qDebug() << "Size: " << _registers.size();
+
 }
 
 IDEXBuffer *RegisterFile::getBuffer() const{

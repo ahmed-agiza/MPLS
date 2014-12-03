@@ -2,7 +2,7 @@
 
 QMap< unsigned int, RegisterName > Register::_regNums;
 QMap< RegisterName, QString > Register::_regNames;
-
+QMap< QString, int > Register::_regNumbers;
 
 Register::Register(QObject *parent, Component *sourceComponent, int value, RegisterName name)
     :Component(parent, sourceComponent), _value(value), _name(name), _state(RegisterState::STABLE){

@@ -161,6 +161,7 @@ bool Core::_execute(Instruction *instruction, int &index){
         else
             qDebug() << "Not procceeding from EX";
         return true;
+        qDebug() << "Ex'd";
         break;
 
     }case ExecState::MEM:{
@@ -199,6 +200,7 @@ bool Core::_execute(Instruction *instruction, int &index){
             instruction->setState(ExecState::WB);
         else
             qDebug() << "Not procceeding from MEM";
+        qDebug() << "Mem'd";
         return true;
         break;
 
@@ -248,6 +250,7 @@ bool Core::_execute(Instruction *instruction, int &index){
             printQueue(_instrQueue);
         }else
             qDebug() << "Not procceeding from WB";
+        qDebug() << "Wb'd";
         return true;
         break;
 
