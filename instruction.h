@@ -43,7 +43,7 @@ class Instruction :	public QObject {
     void initializeNamesMap();
 public:
 
-    Instruction(QObject * = 0, InstructionName = InstructionName::UNDEF, int = 0, int = 0, int = 0, int = 0, ExecState = ExecState::IF);
+    Instruction(QObject * = 0, InstructionName = InstructionName::UNDEF, int = 0, int = 0, int = 0, int = 0, ExecState = ExecState::UNDEF);
     Instruction(const Instruction &);
 
     bool isRInstruction() const;

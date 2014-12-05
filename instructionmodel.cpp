@@ -15,7 +15,7 @@ int InstructionModel::rowCount(const QModelIndex &) const{
 }
 
 int InstructionModel::columnCount(const QModelIndex &) const{
-    return 2;
+    return 3;
 }
 
 QVariant InstructionModel::data(const QModelIndex &index, int role) const{
@@ -27,6 +27,22 @@ QVariant InstructionModel::data(const QModelIndex &index, int role) const{
         if (index.column() == 0){
             return "0x" + getPaddedHex(index.row() * 4, 32);
         }else if (index.column() == 1){
+            switch(_instructionsList->at(index.row())->getState()){
+            case ExecState::UNDEF:
+                return QVariant("INIT");
+            case ExecState::IF:
+                return QVariant("IF");
+            case ExecState::ID:
+                return QVariant("ID");
+            case ExecState::MEM:
+                return QVariant("MEM");
+            case ExecState::WB:
+                return QVariant("WB");
+            case ExecState::COMP:
+                return QVariant("Complete");
+            }
+
+        }else if (index.column() == 2){
             return QString(*(_instructionsList->at(index.row())));
         }
         else
@@ -48,6 +64,9 @@ QVariant InstructionModel::headerData(int section, Qt::Orientation orientation, 
 
         case 1:
             return QVariant("Instruction");
+
+        case 2:
+            return QVariant("Execution Stage");
 
         default:
             return QVariant();

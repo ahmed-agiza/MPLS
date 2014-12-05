@@ -24,10 +24,14 @@ public:
 
     Register(const Register &);
 
+    operator int();
+    operator QString();
+
+    QString toString() const;
+
     bool is(const Register &) const;
 
-    QString getStringName() const;
-    operator QString();
+    QString getRegisterNameString() const;
 
     void setState(RegisterState);
     RegisterState getState() const;
@@ -39,8 +43,6 @@ public:
     RegisterName getName() const;
 
     Register &operator=(const Register &);
-
-    operator int();
 
     Register operator+(const int&);
 

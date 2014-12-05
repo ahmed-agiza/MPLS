@@ -17,6 +17,10 @@ void Core::_constructComponents(){
 }
 
 void printQueue(QList<Instruction *> &q){
+    if(q.size() == 0){
+        qDebug() << "Empty.";
+        return;
+    }
     qDebug() << "{";
     for(int i = 0; i < q.size(); i++)
         qDebug() << i << *(q.at(i));
@@ -42,7 +46,7 @@ bool Core::_execute(Instruction *instruction, int &index){
 
     switch (instruction->getState()){
     case ExecState::IF:{
-        qDebug() << "Decoding: " << *instruction;
+        qDebug() << "ID: " << *instruction;
         //Decode:
         if (instruction->isRInstruction()){
             qDebug() << "$rs = " << instruction->getRegisterRs();
@@ -86,13 +90,13 @@ bool Core::_execute(Instruction *instruction, int &index){
             instruction->setState(ExecState::ID);
         else
             qDebug() << "Not procceeding from ID";
-        qDebug() << "Decoded";
+        qDebug() << "End of ID";
         return true;
         break;
 
     }case ExecState::ID:{
         //Execute:
-         qDebug() << "Executing: " << *instruction;
+         qDebug() << "EX: " << *instruction;
         if (instruction->isRInstruction()){
             qDebug() << "Operand A: " << _regFile->getReadDataA();
             qDebug() << "Operand B: " << _regFile->getReadDataB();
@@ -151,7 +155,7 @@ bool Core::_execute(Instruction *instruction, int &index){
         qDebug() << "ALU Result: " << _ALU->getResult();
         qDebug() << "Zero Buffer: " << _ALU->getZeroFlag();
         qDebug() << "Branch Target: " << _ALU->getResult();
-        qDebug() << "Register B: " << _regFile->_registers.at(instruction->getRegisterRt())->getStringName() << "  " <<_regFile->_registers.at(instruction->getRegisterRt())->getValue();
+        qDebug() << "Register B: " << _regFile->_registers.at(instruction->getRegisterRt())->getRegisterNameString() << "  " <<_regFile->_registers.at(instruction->getRegisterRt())->getValue();
         aluBuf->setALUResult(_ALU->getResult());
         aluBuf->setZeroFlag(_ALU->getZeroFlag());
         aluBuf->setBranchTarget(_ALU->getResult());
@@ -160,13 +164,13 @@ bool Core::_execute(Instruction *instruction, int &index){
             instruction->setState(ExecState::MEM);
         else
             qDebug() << "Not procceeding from EX";
+        qDebug() << "End of EX";
         return true;
-        qDebug() << "Ex'd";
         break;
 
     }case ExecState::MEM:{
         //Memory Read/Write:
-        qDebug() << "Mem: " << *instruction;
+        qDebug() << "MEM: " << *instruction;
         if (instruction->isRInstruction()){
             qDebug() << "R-Instruction has no effect on memory";
             proceed = true;
@@ -184,7 +188,7 @@ bool Core::_execute(Instruction *instruction, int &index){
                 qDebug() << "Reg Write Data: " << _dMem->getData();
                 _regFile->setWriteData(_dMem->getData());
                 break;
-            }
+            }           
             memBuf->setALUResult(_ALU->getResult());
             memBuf->setMemoryData(_dMem->getData());
             proceed = true;
@@ -200,13 +204,13 @@ bool Core::_execute(Instruction *instruction, int &index){
             instruction->setState(ExecState::WB);
         else
             qDebug() << "Not procceeding from MEM";
-        qDebug() << "Mem'd";
+        qDebug() << "End of MEM";
         return true;
         break;
 
     }case ExecState::WB:{
         //Regfile WriteBack:
-         qDebug() << "WB: " << *instruction;
+        qDebug() << "WB: " << *instruction;
         if (instruction->isRInstruction()){
             if (instruction->getName() == InstructionName::ADD || instruction->getName() == InstructionName::SLT){
                 qDebug() << "Write Data: " << _ALU->getResult();
@@ -243,19 +247,19 @@ bool Core::_execute(Instruction *instruction, int &index){
         }
         if (proceed){
             instruction->setState(ExecState::COMP);
-            qDebug() << "Removing: " << *instruction << " == " << *(_instrQueue.first());
-            _instrQueue.removeFirst();
+            qDebug() << "Removing: " << *instruction << " == " << *(_instrQueue.last());
+            _instrQueue.removeLast();
             index--;
             qDebug() << "New Queue: ";
             printQueue(_instrQueue);
         }else
             qDebug() << "Not procceeding from WB";
-        qDebug() << "Wb'd";
+        qDebug() << "End of WB";
         return true;
         break;
 
     }case ExecState::COMP:{
-        qDebug() << "There is a bug! \\^-^/ Instruction is already executed! " << *instruction;
+        qDebug() << "There is a bug! \\^-^/ Instruction is already executed..or not." << *instruction;
         break;
 
     }case ExecState::UNDEF:
@@ -269,6 +273,7 @@ bool Core::_execute(Instruction *instruction, int &index){
 
 
 void Core::executeCycle(){
+    qDebug() << "Cycle: " << _cycle;
     qDebug() << "Queue before fetching: ";
     printQueue(_instrQueue);
 
@@ -318,8 +323,8 @@ QList< int> Core::getMemoryDump(int lowerBound, int higherBound) const{
 
 bool Core::_if(){
     _instrQueue.prepend(_iMem->fetchInstruction());
-    _iMem->fetchInstruction()->setState(ExecState::IF);
     qDebug() << "Fetched: " << *(_iMem->fetchInstruction());
+    _iMem->fetchInstruction()->setState(ExecState::IF);
     auto iMemBuf = _iMem->getBuffer();
     iMemBuf->setInstruction(*(_iMem->fetchInstruction()));
     qDebug() << "Fetching PC: " << _pc->getDisplayValue();

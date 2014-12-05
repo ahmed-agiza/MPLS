@@ -92,8 +92,10 @@ bool RegisterFile::writeData(){
         qDebug() << "Invalid index";
         return false;
     }
+
+    qDebug() << "Writing " << _writeData << " to " << _registers[_writeAddress]->toString();
     if(_writeAddress != 0)
-        *(_registers[_writeAddress]) = _writeData;
+        _registers[_writeAddress]->setValue(_writeData);
     return true;
 }
 

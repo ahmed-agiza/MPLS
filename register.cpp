@@ -15,13 +15,20 @@ Register::Register(const Register &source)
 
 }
 
+QString Register::toString() const{
+    QString name = getRegisterNameString();
+    name += "(" + QString::number(_value) + ")";
+    return name;
+}
+
 bool Register::is(const Register &other) const{
     return _name != RegisterName::UNDEF && _name != RegisterName::BUFF && _name != RegisterName::CUSTOM && _name == other._name;
 }
 
-QString Register::getStringName() const{
+QString Register::getRegisterNameString() const{
     return _regNames[_name];
 }
+
 
 void Register::setState(RegisterState state){
     _state = state;
@@ -31,9 +38,6 @@ RegisterState Register::getState() const{
     return _state;
 }
 
-Register::operator QString(){
-     return getStringName();
-}
 
 void Register::_initializeRegistersMap(){
     _regNums[0] = RegisterName::ZERO;
@@ -167,6 +171,12 @@ Register &Register::operator=(const Register &source){
 
     return *this;
 }
+
+Register::operator QString(){
+   return toString();
+}
+
+
 
 Register::operator int(){
     return _value;

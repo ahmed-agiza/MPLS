@@ -8,6 +8,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow), simulator(new Simulator(this)), editor(new CodeEditor(this)), simulationRunning(false), isFileModified(false){
     ui->setupUi(this);
+    qDebug() << "";
     ui->twdCode->setCurrentIndex(0);
     ui->tabCodeEditor->layout()->addWidget(editor);
     QObject::connect(editor, SIGNAL(textChanged()), this, SLOT(fileModified()));
@@ -208,6 +209,7 @@ void MainWindow::on_actionNextCycle_triggered(){
     //simulator->nextCycle();
     //ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
     core->executeCycle();
+    ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
 }
 
 void MainWindow::on_actionStopSimulation_triggered(){

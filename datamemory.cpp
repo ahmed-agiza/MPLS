@@ -6,6 +6,7 @@ DataMemory::DataMemory(QObject *parent, Component *sourceComponent, size_t size,
     _values.reserve(size);
     for(int i = 0; i < (int)size; i++)
         _values.append(defaultValue);
+    _buffer = new MEMWBBuffer(this, this);
 
 }
 
