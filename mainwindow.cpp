@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow), simulator(new Simulator(this)), editor(new CodeEditor(this)), simulationRunning(false), isFileModified(false){
     ui->setupUi(this);
     qDebug() << "";
+
     ui->twdCode->setCurrentIndex(0);
     ui->tabCodeEditor->layout()->addWidget(editor);
     QObject::connect(editor, SIGNAL(textChanged()), this, SLOT(fileModified()));
@@ -35,17 +36,18 @@ MainWindow::MainWindow(QWidget *parent) :
     InstructionModel *insModel = new InstructionModel(this, temp);
 
     ui->tblAssembled->setModel(insModel);
-    RegisterFile *regFile = new RegisterFile(this, 0, 32);
-    ProgramCounter *pc = new ProgramCounter(this, 0);
-    pc->setValue(10);
-    RegisterModel *regModel = new RegisterModel(this, regFile, pc);
-    ui->tblRegisters->setModel(regModel);
+    //RegisterFile *regFile = new RegisterFile(this, 0, 32);
+    //ProgramCounter *pc = new ProgramCounter(this, 0);
+    //pc->setValue(10);
+    //RegisterModel *regModel = new RegisterModel(this, regFile, pc);
+    //ui->tblRegisters->setModel(regModel);
 
     DataMemory *memory = new DataMemory(this, 0, 35, 7);
     MemoryModel *memModel = new MemoryModel(this, memory);
     ui->tblMemory->setModel(memModel);
 
     core = new Core(this, *temp);
+    ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
     //**************End test**************************
 }
 

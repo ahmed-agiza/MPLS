@@ -29,11 +29,13 @@ QVariant InstructionModel::data(const QModelIndex &index, int role) const{
         }else if (index.column() == 1){
             switch(_instructionsList->at(index.row())->getState()){
             case ExecState::UNDEF:
-                return QVariant("INIT");
+                return QVariant("Initial");
             case ExecState::IF:
                 return QVariant("IF");
             case ExecState::ID:
                 return QVariant("ID");
+            case ExecState::EX:
+                return QVariant("EX");
             case ExecState::MEM:
                 return QVariant("MEM");
             case ExecState::WB:

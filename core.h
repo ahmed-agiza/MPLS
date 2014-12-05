@@ -37,13 +37,13 @@ public:
 
     void executeCycle();
 
-    void gotoCycle(unsigned int);
-
     unsigned int getCycle() const;
 
     DataMemory *getDataMemory() const;
 
     RegisterFile *getRegisterFile() const;
+
+    ProgramCounter *getProgramCounter() const;
 
     QList< int > getRegistersDump(int, int) const;
 

@@ -17,8 +17,6 @@ void RegisterFile::_initialzeDefaultRegisters(){
 
     _registers[28]->setValue(0x10008000);
     _registers[29]->setValue(0x7FFFEFFC);
-    qDebug() << "Size: " << _registers.size();
-
 }
 
 IDEXBuffer *RegisterFile::getBuffer() const{
@@ -93,7 +91,7 @@ bool RegisterFile::writeData(){
         return false;
     }
 
-    qDebug() << "Writing " << _writeData << " to " << _registers[_writeAddress]->toString();
+    qDebug() << "Writing " << _writeData << " to " << _writeAddress << ": " << _registers[_writeAddress]->toString();
     if(_writeAddress != 0)
         _registers[_writeAddress]->setValue(_writeData);
     return true;

@@ -249,7 +249,8 @@ bool Core::_execute(Instruction *instruction, int &index){
             instruction->setState(ExecState::COMP);
             qDebug() << "Removing: " << *instruction << " == " << *(_instrQueue.last());
             _instrQueue.removeLast();
-            index--;
+           // index- = ;
+           // qDebug() << "Index: " << index;
             qDebug() << "New Queue: ";
             printQueue(_instrQueue);
         }else
@@ -283,17 +284,16 @@ void Core::executeCycle(){
     printQueue(_instrQueue);
 
     for(int i = _instrQueue.size() - 1; i > 0; i--){
-        qDebug() << "**********************";
+        qDebug() << "*********** " << i << " ***********";
         if (!_execute(_instrQueue.at(i), i))
             break;
+        qDebug() << "Numbers Map: " << Register::_regNumbers;
         qDebug() << "====================";
     }
     _cycle++;
 }
 
-void Core::gotoCycle(unsigned int){
 
-}
 
 unsigned int Core::getCycle() const{
     return _cycle;
@@ -305,6 +305,10 @@ DataMemory *Core::getDataMemory() const{
 
 RegisterFile *Core::getRegisterFile() const{
     return _regFile;
+}
+
+ProgramCounter *Core::getProgramCounter() const{
+    return _pc;
 }
 
 QList< int > Core::getRegistersDump(int lowerBound, int higherBound) const{
