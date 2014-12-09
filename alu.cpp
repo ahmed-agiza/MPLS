@@ -1,7 +1,8 @@
 #include "alu.h"
 
+
 ALU::ALU(QObject *parent, Component *sourceComponent, int operandA, int operandB, Operation operation):
-Component(parent, sourceComponent), _operandA(operandA), _operandB(operandB), _operation(operation){
+    Component(parent, sourceComponent), _operandA(operandA), _operandB(operandB), _operation(operation){
     _buffer = new EXMEMBuffer(this, this);
 }
 
@@ -40,6 +41,9 @@ int ALU::getResult() const{
         break;
     case Operation::SUB:
         return (_operandA - _operandB);
+        break;
+    case Operation::XOR:
+        return (_operandA ^ _operandB);
         break;
     case Operation::OR:
         return (_operandA | _operandB);

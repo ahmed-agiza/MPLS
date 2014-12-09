@@ -18,6 +18,7 @@ class Register : public Component
 
 protected:
     int _value;
+    unsigned int _accessors;
     RegisterName _name;
     RegisterState _state;
 

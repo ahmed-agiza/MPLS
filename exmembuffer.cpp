@@ -1,8 +1,17 @@
 #include "exmembuffer.h"
 
-EXMEMBuffer::EXMEMBuffer(QObject *parent, Component *sourceComponent)
-    :Buffer(parent, sourceComponent){
 
+EXMEMBuffer::EXMEMBuffer(QObject *parent, Component *sourceComponent)
+    :Buffer(parent, sourceComponent), _targetRegisterNumber(-1), _lastInstruction(TargetType::UNDEF){
+    
+}
+
+TargetType EXMEMBuffer::getLastInstruction() const{
+    return _lastInstruction;
+}
+
+void EXMEMBuffer::setLastInstruction(const TargetType &lastInstruction){
+    _lastInstruction = lastInstruction;
 }
 
 void EXMEMBuffer::clear(){
@@ -10,6 +19,7 @@ void EXMEMBuffer::clear(){
     _ALUResult = 0;
     _zeroFlag = 0;
     _registerB = 0;
+    _targetRegisterNumber = -1;
 }
 
 void EXMEMBuffer::setBranchTarget(int branchTarget){
@@ -43,6 +53,18 @@ void EXMEMBuffer::setRegisterB(Register registerB){
 Register EXMEMBuffer::getRegisterB() const{
     return _registerB;
 }
+
+
+void EXMEMBuffer::setTargetRegisterNumber(int value){
+    _targetRegisterNumber = value;
+}
+
+int EXMEMBuffer::getTargetRegisterNumber() const{
+    return _targetRegisterNumber;
+}
+
+
+
 
 EXMEMBuffer::~EXMEMBuffer(){
 

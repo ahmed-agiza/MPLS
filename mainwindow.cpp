@@ -33,11 +33,16 @@ MainWindow::MainWindow(QWidget *parent) :
     temp->push_back(new Instruction(this, InstructionName::SW, 6, 3, 4, 8));
     temp->push_back(new Instruction(this, InstructionName::SLT, 1, 3, 4, 5));
  int rs, int rt, int rd, int immediate, ExecState state)*/
-    temp->push_back(new Instruction(this, InstructionName::ADDI, 0, 5, 0, 5));
-    temp->push_back(new Instruction(this, InstructionName::ADDI, 5, 6, 0, 4));
+   // temp->push_back(new Instruction(this, InstructionName::ADDI, 0, 5, 0, 5));
+   // temp->push_back(new Instruction(this, InstructionName::ADDI, 5, 6, 0, 4));
    // temp->push_back(new Instruction(this, InstructionName::JAL, 5, 6, 0, 6));
+   // temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 0, 3, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::SW, 0, 3, 0, 4));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::LW, 0, 7, 0, 4));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 7, 11, 0, 5));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
@@ -75,9 +80,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tblMemory->setModel(memModel);
 
     core = new Core(this, *temp);
+    connect(core, SIGNAL(stalled()), this, SLOT(simulationStalled()));
+    connect(core, SIGNAL(forwarded(QString)), this, SLOT(simulationForwarded(QString)));
     ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
     ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
     //**************End test**************************
+
+
 }
 
 bool MainWindow::saveActiveFile(){
@@ -257,6 +266,15 @@ void MainWindow::fileModified(){
     isFileModified = true;
     if(!ui->twdCode->tabText(0).trimmed().endsWith("*"))
         ui->twdCode->setTabText(0, ui->twdCode->tabText(0) + "*");
+}
+
+void MainWindow::simulationStalled(){
+    statusBar()->showMessage("Pipeline Stalled", 3000);
+
+}
+
+void MainWindow::simulationForwarded(QString msg){
+    statusBar()->showMessage(msg, 3000);
 }
 
 void MainWindow::enableSimulation(){

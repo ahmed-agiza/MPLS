@@ -62,11 +62,11 @@ const QMap< QString, int > Register::_regNumbers{
 };
 
 Register::Register(QObject *parent, Component *sourceComponent, int value, RegisterName name)
-    :Component(parent, sourceComponent), _value(value), _name(name), _state(RegisterState::STABLE){
+    :Component(parent, sourceComponent), _value(value), _accessors(0), _name(name), _state(RegisterState::STABLE){
 }
 
 Register::Register(const Register &source)
-    :Component(source.parent(), source.getSourceComponent()), _value(source._value), _name(source._name), _state(source._state){
+    :Component(source.parent(), source.getSourceComponent()), _value(source._value), _accessors(0), _name(source._name), _state(source._state){
 
 }
 
@@ -86,7 +86,13 @@ QString Register::getRegisterNameString() const{
 }
 
 void Register::setState(RegisterState state){
-    _state = state;
+    if (state == RegisterState::WRITING){
+        _accessors++;
+        _state = state;
+    }else if (_state != RegisterState::STABLE){
+        if (!(--_accessors))
+            _state = state;
+    }
 }
 
 RegisterState Register::getState() const{

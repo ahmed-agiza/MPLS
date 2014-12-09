@@ -53,6 +53,8 @@ public:
 
     void _id(bool proceed, Instruction *instruction);
 signals:
+    void forwarded(QString);
+    void stalled();
 
 public slots:
 

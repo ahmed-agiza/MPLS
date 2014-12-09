@@ -4,7 +4,7 @@
 #include "component.h"
 #include "exmembuffer.h"
 
-enum class Operation {UNDEF, ADD, SUB, OR, SLT, LE, NOP};
+enum class Operation {UNDEF, ADD, SUB, OR, SLT, LE, XOR, NOP};
 
 class ALU : public Component
 {

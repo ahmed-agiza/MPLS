@@ -4,6 +4,8 @@
 #include "buffer.h"
 #include "register.h"
 
+enum class TargetType{REGISTER, MEMORY, STALLED, UNDEF};
+
 class EXMEMBuffer : public Buffer
 {
     Q_OBJECT
@@ -11,6 +13,8 @@ class EXMEMBuffer : public Buffer
     int _branchTarget;
     int _ALUResult;
     bool _zeroFlag;
+    int _targetRegisterNumber;
+    TargetType _lastInstruction;
     Register _registerB;
 public:
     EXMEMBuffer(QObject * = 0, Component * = 0);
@@ -29,7 +33,16 @@ public:
     void setRegisterB(Register);
     Register getRegisterB() const;
 
+    int getTargetRegisterNumber() const;
+    void setTargetRegisterNumber(int value);
+
+    TargetType getLastInstruction() const;
+    void setLastInstruction(const TargetType &getLastInstruction);
+
     ~EXMEMBuffer();
+
+
+
 
 signals:
 

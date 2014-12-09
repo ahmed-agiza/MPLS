@@ -64,6 +64,9 @@ private slots:
 
     void fileModified();
 
+    void simulationStalled();
+    void simulationForwarded(QString);
+
 };
 
 #endif // MAINWINDOW_H
