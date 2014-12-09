@@ -2,9 +2,9 @@
 
 QString registerRegex("\\$((?:[12]?[\\d])|(?:3[012])|(?:zero)|(?:at)|(?:v[01])|(?:a[0-3])|(?:t\\d)|(?:s[0-7])|(?:k[01])|gp|fp|ra|sp)");
 QString commentRegex("#.*");
-QString labelRegex("[a-zA-Z_]\\w*");
+QString labelRegex("[a-zA-Z_][a-zA-Z0-9]*");
 QString labelRegexCap("(" + labelRegex + "):");
-QString numberRegex("(0x[0-9a-fA-F]+|-?\\d+|0b[01]+)");
+QString numberRegex("(0x[0-9a-fA-F]+|-?[0-9]+|0b[01]+)");
 QString whiteSpaceRegex("[\\t ]");
 QString optionalWhiteSpace = whiteSpaceRegex + "*";
 QString commaa = optionalWhiteSpace + "," + optionalWhiteSpace;
@@ -27,6 +27,12 @@ QString Simulator::getInstructionRegex(QString instructionString){
 }
 
 bool Simulator::parseInstructions(){
+
+    foreach(QString line, _rawInstructions)
+    {
+        qDebug() << line;
+    }
+
     qDebug() << "Parsing.";
     QList<QRegExp> instructionFormats;
     instructionFormats.append(QRegExp(getInstructionRegex(QString("(add|xor|slt)") + whiteSpaceRegex + "+" + registerRegex + commaa + registerRegex + commaa + registerRegex), Qt::CaseInsensitive));
@@ -48,6 +54,7 @@ bool Simulator::parseInstructions(){
     foreach(QString line, _rawInstructions)
     {
         line = line.toLower();
+        qDebug() << line;
         if(instructionFormats[0].indexIn(line) == 0){   // add slt xor
             if(instructionFormats[0].cap(1).size() > 0){
                 symbolTable[instructionFormats[0].cap(1)] = instructionNumber;
@@ -67,11 +74,11 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[1].cap(1)] = instructionNumber;
             }
             _instructions.append(new Instruction(this,
-                                                 _instructionNames[instructionFormats[0].cap(2)],
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 _instructionNames[instructionFormats[1].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[1].cap(4)),
+                                                 Simulator::getRegisterNumber(instructionFormats[1].cap(3)),
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[0].cap(5)),
+                                                 Simulator::getNumber(instructionFormats[1].cap(5)),
                                                  ExecState::IF
                                                  )
                                  );
@@ -81,11 +88,11 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[2].cap(1)] = instructionNumber;
             }
             _instructions.append(new Instruction(this,
-                                                 _instructionNames[instructionFormats[0].cap(2)],
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(5)),
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 _instructionNames[instructionFormats[2].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[2].cap(5)),
+                                                 Simulator::getRegisterNumber(instructionFormats[2].cap(3)),
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[0].cap(4)),
+                                                 Simulator::getNumber(instructionFormats[2].cap(4)),
                                                  ExecState::IF
                                                  )
                                  );
@@ -95,9 +102,9 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[3].cap(1)] = instructionNumber;
             }
             _instructions.append(new Instruction(this,
-                                                 _instructionNames[instructionFormats[0].cap(2)],
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 _instructionNames[instructionFormats[3].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[3].cap(4)),
+                                                 Simulator::getRegisterNumber(instructionFormats[3].cap(3)),
                                                  0,
                                                  0,
                                                  ExecState::IF
@@ -115,8 +122,8 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[4].cap(1)] = instructionNumber;
             }
             _instructions.append(new Instruction(this,
-                                                 _instructionNames[instructionFormats[0].cap(2)],
-                                                 Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
+                                                 _instructionNames[instructionFormats[4].cap(2)],
+                                                 Simulator::getRegisterNumber(instructionFormats[4].cap(3)),
                                                  0,
                                                  0,
                                                  0,
@@ -129,7 +136,7 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[5].cap(1)] = instructionNumber;
             }
             _instructions.append(new Instruction(this,
-                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 _instructionNames[instructionFormats[5].cap(2)],
                                                  0,
                                                  0,
                                                  0,
@@ -149,11 +156,11 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[6].cap(1)] = instructionNumber;
             }
             _instructions.append(new Instruction(this,
-                                                 _instructionNames[instructionFormats[0].cap(2)],
+                                                 _instructionNames[instructionFormats[6].cap(2)],
                                                  0,
                                                  0,
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[0].cap(3)),
+                                                 Simulator::getNumber(instructionFormats[6].cap(3)),
                                                  ExecState::IF
                                                  )
                                  );
