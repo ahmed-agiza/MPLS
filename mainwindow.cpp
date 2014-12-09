@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //**************Dummy value for testing**************************
     QList<Instruction *> *temp = new QList<Instruction *>;
-    temp->push_back(new Instruction(this, InstructionName::ADD, 2, 3, 4, 5));
+   /* temp->push_back(new Instruction(this, InstructionName::ADD, 2, 3, 4, 5));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 10, 11, 21, 15));
     temp->push_back(new Instruction(this, InstructionName::BLE, 14, 13, 14, 3));
     temp->push_back(new Instruction(this, InstructionName::J, 5, 6, 7, 4));
@@ -32,6 +32,34 @@ MainWindow::MainWindow(QWidget *parent) :
     temp->push_back(new Instruction(this, InstructionName::LW, 0, 3, 5, 5));
     temp->push_back(new Instruction(this, InstructionName::SW, 6, 3, 4, 8));
     temp->push_back(new Instruction(this, InstructionName::SLT, 1, 3, 4, 5));
+ int rs, int rt, int rd, int immediate, ExecState state)*/
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 0, 5, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 5, 6, 0, 4));
+   // temp->push_back(new Instruction(this, InstructionName::JAL, 5, 6, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    //temp->push_back(new Instruction(this, InstructionName::ADD, 6, 5, 7, 0));
+   // temp->push_back(new Instruction(this, InstructionName::BLE, 5, 6, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::SW, 6, 5, 4, 4));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 0, 5, 0, 1));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::LW, 6, 5, 4, 4));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 5));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
+    temp->push_back(new Instruction(this, InstructionName::ADDI, 11, 11, 0, 6));
 
     InstructionModel *insModel = new InstructionModel(this, temp);
 
@@ -42,12 +70,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //RegisterModel *regModel = new RegisterModel(this, regFile, pc);
     //ui->tblRegisters->setModel(regModel);
 
-    DataMemory *memory = new DataMemory(this, 0, 35, 7);
-    MemoryModel *memModel = new MemoryModel(this, memory);
-    ui->tblMemory->setModel(memModel);
+    //DataMemory *memory = new DataMemory(this, 0, 35, 7);
+    //MemoryModel *memModel = new MemoryModel(this, memory);
+    //ui->tblMemory->setModel(memModel);
 
     core = new Core(this, *temp);
     ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
+    ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
     //**************End test**************************
 }
 

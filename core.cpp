@@ -54,7 +54,7 @@ bool Core::_execute(Instruction *instruction, int &index){
             qDebug() << "$rd = " << instruction->getRegisterRd();
             _regFile->setReadAddressA(instruction->getRegisterRs());
             _regFile->setReadAddressB(instruction->getRegisterRt());
-            _regFile->setWriteAddress(instruction->getRegisterRd());
+           // _regFile->setWriteAddress(instruction->getRegisterRd());
             if (instruction->getName() == InstructionName::ADD || instruction->getName() == InstructionName::SLT)
                 _regFile->_registers[instruction->getRegisterRd()]->setState(RegisterState::WRITING);
             proceed = true;
@@ -64,13 +64,13 @@ bool Core::_execute(Instruction *instruction, int &index){
             qDebug() << "imm = " << instruction->getImmediate();
             _regFile->setReadAddressA(instruction->getRegisterRs());
             _regFile->setReadAddressB(0);
-            _regFile->setWriteAddress(instruction->getRegisterRt());
+            //_regFile->setWriteAddress(instruction->getRegisterRt());
             if (instruction->getName() == InstructionName::ADDI || instruction->getName() == InstructionName::LW)
                 _regFile->_registers[instruction->getRegisterRt()]->setState(RegisterState::WRITING);
             proceed = true;
         }else if (instruction->isJInstruction()){
             if (instruction->getName() == InstructionName::JAL){
-                _regFile->setWriteAddress(31);
+               // _regFile->setWriteAddress(31);
                 _regFile->setWriteData(*_pc);
                 _regFile->_registers[31]->setState(RegisterState::WRITING);
             }
@@ -121,10 +121,12 @@ bool Core::_execute(Instruction *instruction, int &index){
         }else if (instruction->isIInstruction()){
             qDebug() << "Operand A: " << _regFile->getReadDataA();
             qDebug() << "Operand B: " << instruction->getImmediate();
+
             _ALU->setOperandA(_regFile->getReadDataA());
             _ALU->setOperandB(instruction->getImmediate());
             switch (instruction->getName()){
             case InstructionName::ADDI:
+            case InstructionName::JAL:
                 _ALU->setOperation(Operation::ADD);
                 break;
             case InstructionName::BLE:
@@ -158,6 +160,12 @@ bool Core::_execute(Instruction *instruction, int &index){
             }
             proceed = true;
         }else if (instruction->isJInstruction()){
+            if (instruction->getName() == InstructionName::JAL){
+                qDebug() << "JAL:  " << regBuf->getProgramCounter().getValue();
+                _ALU->setOperandA(regBuf->getProgramCounter().getValue());
+                _ALU->setOperandB(0);
+                _ALU->setOperation(Operation::ADD);
+            }
             qDebug() << "Jumping with " << *instruction;
             qDebug() << "Old PC: " << _pc->getDisplayValue();
             _pc->setValue(((int)(regBuf->getProgramCounter()) & 0xF0000000) | (instruction->getImmediate() & 0x0FFFFFFF));
@@ -193,21 +201,27 @@ bool Core::_execute(Instruction *instruction, int &index){
             switch (instruction->getName()) {
             case InstructionName::SW:
                 qDebug() << "SW: ";
-                qDebug() << "Write Data: " << _ALU->getBuffer()->getRegisterB().getValue();
+                qDebug() << "Write Data: " << aluBuf->getRegisterB().getValue();
+                qDebug() << "Write Address: " << aluBuf->getALUResult();
+                _dMem->setAddress(aluBuf->getALUResult());
                 _dMem->setWriteEnabled(true);
-                _dMem->writeData(_ALU->getBuffer()->getRegisterB());
+                _dMem->writeData(_ALU->getBuffer()->getRegisterB().getValue());
                 _dMem->setWriteEnabled(false);
                 break;
             case InstructionName::LW:
                 qDebug() << "LW: ";
+                qDebug() << "Read Address: " << aluBuf->getALUResult();
+                 _dMem->setAddress(aluBuf->getALUResult());
                 qDebug() << "Reg Write Data: " << _dMem->getData();
                 _regFile->setWriteData(_dMem->getData());
                 break;
             }           
-            memBuf->setALUResult(_ALU->getResult());
+            memBuf->setALUResult(aluBuf->getALUResult());
             memBuf->setMemoryData(_dMem->getData());
             proceed = true;
         }else if (instruction->isJInstruction()){
+            memBuf->setALUResult(aluBuf->getALUResult() * 4);
+            memBuf->setMemoryData(_dMem->getData());
             qDebug() << "J-Instruction has no effect on memory";
             proceed = true;
         }else{
@@ -228,8 +242,9 @@ bool Core::_execute(Instruction *instruction, int &index){
         qDebug() << "WB: " << *instruction;
         if (instruction->isRInstruction()){
             if (instruction->getName() == InstructionName::ADD || instruction->getName() == InstructionName::SLT){
-                qDebug() << "Write Data: " << _ALU->getResult();
-                _regFile->setWriteData(_ALU->getResult());
+                qDebug() << "Write Data: " << memBuf->getALUResult();
+                _regFile->setWriteData(memBuf->getALUResult());
+                _regFile->setWriteAddress(instruction->getRegisterRd());
                 _regFile->setWriteEnabled(true);
                 _regFile->writeData();
                 _regFile->setWriteEnabled(false);
@@ -238,8 +253,19 @@ bool Core::_execute(Instruction *instruction, int &index){
             proceed = true;
         }else if (instruction->isIInstruction()){
             if (instruction->getName() == InstructionName::LW){
-                qDebug() << "Write Data: " << _ALU->getResult();
-                _regFile->setWriteData(_ALU->getResult());
+                qDebug() << "LW";
+                qDebug() << "Write Address: " << instruction->getRegisterRt();
+                qDebug() << "Writed Data: " << memBuf->getMemoryData();
+                _regFile->setWriteAddress(instruction->getRegisterRt());
+                _regFile->setWriteData(memBuf->getMemoryData());
+                _regFile->setWriteEnabled(true);
+                _regFile->writeData();
+                _regFile->setWriteEnabled(false);
+                _regFile->_registers[instruction->getRegisterRt()]->setState(RegisterState::STABLE);
+            }else if (instruction->getName() == InstructionName::ADDI){
+                qDebug() << "Write Data: " << memBuf->getALUResult();
+                _regFile->setWriteAddress(instruction->getRegisterRt());
+                _regFile->setWriteData(memBuf->getALUResult());
                 _regFile->setWriteEnabled(true);
                 _regFile->writeData();
                 _regFile->setWriteEnabled(false);
@@ -248,11 +274,13 @@ bool Core::_execute(Instruction *instruction, int &index){
             proceed = true;
         }else if (instruction->isJInstruction()){
             if (instruction->getName() == InstructionName::JAL){
-                qDebug() << "Write Data(PC): " << _regFile->getWriteData();
+                qDebug() << "Write Data: " << memBuf->getALUResult();
+                _regFile->setWriteData(memBuf->getALUResult());
+                _regFile->setWriteAddress(31);
                 _regFile->setWriteEnabled(true);
                 _regFile->writeData();
                 _regFile->setWriteEnabled(false);
-                _regFile->_registers[instruction->getRegisterRt()]->setState(RegisterState::STABLE);
+                _regFile->_registers[31]->setState(RegisterState::STABLE);
 
             }
             proceed = true;

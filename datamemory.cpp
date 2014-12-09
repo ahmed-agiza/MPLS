@@ -33,12 +33,27 @@ bool DataMemory::writeData(int data){
         qDebug() << "Invalid index: " << _address;
         return false;
     }
-    _values[_address] = data;
+    if (_address % 4 != 0){
+        qDebug() << "Unalligned memory address: " << _address;
+    }
+    int trueIndex = _address / 4;
+    qDebug() << "Writing: " << data << " to " << trueIndex << "(" << _address << ")";
+    _values[trueIndex] = data;
     return true;
 }
 
 int DataMemory::getData() const{
-    return _values[_address];
+    if ((int)_address >= _values.size()){
+        qDebug() << "Invalid index: " << _address;
+        return false;
+    }
+    if (_address % 4 != 0){
+        qDebug() << "Unalligned memory address: " << _address;
+    }
+    int trueIndex = _address / 4;
+    qDebug() << "Reading: " << _values[trueIndex] << " from " << trueIndex << "(" << _address << ")";
+
+    return _values[trueIndex];
 }
 
 
