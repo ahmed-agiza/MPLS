@@ -25,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QList<Instruction *> *temp = new QList<Instruction *>;
     temp->push_back(new Instruction(this, InstructionName::ADD, 2, 3, 4, 5));
     temp->push_back(new Instruction(this, InstructionName::ADDI, 10, 11, 21, 15));
-    temp->push_back(new Instruction(this, InstructionName::BLE, 14, 13, 14, 15));
-    temp->push_back(new Instruction(this, InstructionName::J, 5, 6, 7, 8));
+    temp->push_back(new Instruction(this, InstructionName::BLE, 14, 13, 14, 3));
+    temp->push_back(new Instruction(this, InstructionName::J, 5, 6, 7, 4));
     temp->push_back(new Instruction(this, InstructionName::JAL, 1, 3, 7, 5));
     temp->push_back(new Instruction(this, InstructionName::JR, 9, 3, 0, 5));
     temp->push_back(new Instruction(this, InstructionName::LW, 0, 3, 5, 5));
@@ -199,6 +199,7 @@ void MainWindow::on_actionAssemble_triggered(){
     if (simulator)
         delete simulator;
     simulator = new Simulator(this, instructions);
+    simulator->parseInstructions();
 }
 
 void MainWindow::on_actionStartSimulation_triggered(){

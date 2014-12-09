@@ -27,7 +27,7 @@ QString Simulator::getInstructionRegex(QString instructionString){
 }
 
 bool Simulator::parseInstructions(){
-
+    qDebug() << "Parsing.";
     QList<QRegExp> instructionFormats;
     instructionFormats.append(QRegExp(getInstructionRegex(QString("(add|xor|slt)") + whiteSpaceRegex + "+" + registerRegex + commaa + registerRegex + commaa + registerRegex), Qt::CaseInsensitive));
     instructionFormats.append(QRegExp(getInstructionRegex(QString("(addi|ble)") + whiteSpaceRegex + "+" + registerRegex + commaa + registerRegex + commaa + numberRegex), Qt::CaseInsensitive));
@@ -189,6 +189,12 @@ bool Simulator::parseInstructions(){
         qDebug() << pError.getLineNumber() << "\t" << pError.getErrorMessage();
     }
 
+    qDebug() << "Parsed.";
+
+    foreach(Instruction *ins, _instructions){
+        qDebug() << *ins;
+    }
+
     return (errorList.size() == 0);
 }
 
@@ -234,7 +240,8 @@ void Simulator::simulate(){
 }
 
 void Simulator::nextCycle(){
-
+    if(_core)
+        _core->executeCycle();
 }
 
 int Simulator::getCurrentCycle() const{

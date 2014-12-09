@@ -65,10 +65,10 @@ QVariant InstructionModel::headerData(int section, Qt::Orientation orientation, 
             return QVariant("Address");
 
         case 1:
-            return QVariant("Instruction");
+            return QVariant("Last Execution Stage");
 
         case 2:
-            return QVariant("Execution Stage");
+            return QVariant("Instruction");
 
         default:
             return QVariant();

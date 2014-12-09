@@ -20,6 +20,8 @@ public:
 
     IFIDBuffer *getBuffer() const;
 
+    int getMemorySize() const;
+
 
     void setInstructions(QList< Instruction * >);
     QList< Instruction *> getInstructions() const;

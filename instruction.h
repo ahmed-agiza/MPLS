@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QDebug>
 
-#include <functional>
-
 #include "alu.h"
 #include "datamemory.h"
 #include "programcounter.h"

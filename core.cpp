@@ -16,7 +16,7 @@ void Core::_constructComponents(){
     _dMem = new DataMemory(this, _ALU->getBuffer());
 }
 
-void printQueue(QList<Instruction *> &q){
+void printQueue(const QList<Instruction *> &q){
     if(q.size() == 0){
         qDebug() << "Empty.";
         return;
@@ -81,7 +81,7 @@ bool Core::_execute(Instruction *instruction, int &index){
         }
 
         qDebug() << "PC: " << _pc->getDisplayValue();
-        regBuf->setProgramCounter(*_pc);
+        regBuf->setProgramCounter(_iMem->getBuffer()->getProgramCounter());
         regBuf->setRegisterA(*(_regFile->_registers[instruction->getRegisterRs()]));
         regBuf->setRegisterB(*(_regFile->_registers[instruction->getRegisterRt()]));
         regBuf->setImmediate(instruction->getImmediate());
@@ -129,9 +129,24 @@ bool Core::_execute(Instruction *instruction, int &index){
                 break;
             case InstructionName::BLE:
                 _ALU->setOperation(Operation::LE);
-                if (_ALU->getResult())
-                    _pc->setValue((*_pc) + instruction->getImmediate());
-                break;
+                qDebug() << "BLE: Current PC: " << _pc->getValue();
+                qDebug() << "BLE: Buffered PC: " << regBuf->getProgramCounter().getValue();
+                qDebug() << "Index before: " << index;
+                if (_ALU->getResult()){
+                    _pc->setValue(regBuf->getProgramCounter().getValue() + instruction->getImmediate());
+                    for(int i = index - 1; i >= 0; i--){
+                        qDebug() << "Before dismiss: ";  printQueue(_instrQueue);
+
+                        if(i < _instrQueue.size()){
+                            _instrQueue.at(i)->setState(ExecState::UNDEF);
+                            _instrQueue.removeAt(i);
+                            index--;
+                            qDebug() << "New queue: ";
+                            printQueue(_instrQueue);
+                        }
+                    }
+                    qDebug() << "New index: " << index;
+                }break;
             case InstructionName::LW:
             case InstructionName::SW:
                 _ALU->setOperation(Operation::ADD);
@@ -145,7 +160,7 @@ bool Core::_execute(Instruction *instruction, int &index){
         }else if (instruction->isJInstruction()){
             qDebug() << "Jumping with " << *instruction;
             qDebug() << "Old PC: " << _pc->getDisplayValue();
-            _pc->setValue(((int)(*_pc) & 0xF0000000) | (instruction->getImmediate() & 0x0FFFFFFF));
+            _pc->setValue(((int)(regBuf->getProgramCounter()) & 0xF0000000) | (instruction->getImmediate() & 0x0FFFFFFF));
             qDebug() << "New PC: " << _pc->getDisplayValue();
             proceed = true;
         }else{
@@ -161,14 +176,14 @@ bool Core::_execute(Instruction *instruction, int &index){
         aluBuf->setBranchTarget(_ALU->getResult());
         aluBuf->setRegisterB(*(_regFile->_registers.at(instruction->getRegisterRt())));
         if (proceed)
-            instruction->setState(ExecState::MEM);
+            instruction->setState(ExecState::EX);
         else
             qDebug() << "Not procceeding from EX";
         qDebug() << "End of EX";
         return true;
         break;
 
-    }case ExecState::MEM:{
+    }case ExecState::EX:{
         //Memory Read/Write:
         qDebug() << "MEM: " << *instruction;
         if (instruction->isRInstruction()){
@@ -201,14 +216,14 @@ bool Core::_execute(Instruction *instruction, int &index){
         }
 
         if (proceed)
-            instruction->setState(ExecState::WB);
+            instruction->setState(ExecState::MEM);
         else
             qDebug() << "Not procceeding from MEM";
         qDebug() << "End of MEM";
         return true;
         break;
 
-    }case ExecState::WB:{
+    }case ExecState::MEM:{
         //Regfile WriteBack:
         qDebug() << "WB: " << *instruction;
         if (instruction->isRInstruction()){
@@ -259,7 +274,8 @@ bool Core::_execute(Instruction *instruction, int &index){
         return true;
         break;
 
-    }case ExecState::COMP:{
+    }case ExecState::COMP:
+    case ExecState::WB:{
         qDebug() << "There is a bug! \\^-^/ Instruction is already executed..or not." << *instruction;
         break;
 
@@ -278,18 +294,24 @@ void Core::executeCycle(){
     qDebug() << "Queue before fetching: ";
     printQueue(_instrQueue);
 
-    _if();
+
 
     qDebug() << "Queue after fetching: ";
     printQueue(_instrQueue);
 
-    for(int i = _instrQueue.size() - 1; i > 0; i--){
+    for(int i = _instrQueue.size() - 1; i >= 0; i--){
         qDebug() << "*********** " << i << " ***********";
-        if (!_execute(_instrQueue.at(i), i))
+        auto inst = _instrQueue.at(i);
+        qDebug() << "PC before instruction: " << *(inst) << ":  " <<  ((int)(*_pc)) << "\n\n\n\n\n";
+        if (!_execute(inst, i)){
+            qDebug() << "PC after instruction: "<< *(inst) << ":  " << ((int)(*_pc));
             break;
-        qDebug() << "Numbers Map: " << Register::_regNumbers;
+        }else
+            qDebug() << "PC after instruction: "<< *(inst) << ":  " << ((int)(*_pc));
+        //qDebug() << "Numbers Map: " << Register::_regNumbers;
         qDebug() << "====================";
     }
+    _if();
     _cycle++;
 }
 
@@ -326,11 +348,21 @@ QList< int> Core::getMemoryDump(int lowerBound, int higherBound) const{
 }
 
 bool Core::_if(){
-    _instrQueue.prepend(_iMem->fetchInstruction());
-    qDebug() << "Fetched: " << *(_iMem->fetchInstruction());
+    if(_pc->getValue() >= _iMem->getMemorySize()){
+        qDebug() << "PC is at last instruction.";
+        return false;
+    }
+    if(_instrQueue.size() == 5){
+        qDebug() << "Queue is full.";
+        return false;
+    }
+    qDebug() << "*+*+*+*Fetch*+*+*+*";
+    auto fetched = _iMem->fetchInstruction();
+    _instrQueue.prepend(fetched);
+    qDebug() << "Fetched: " << *(fetched);
     _iMem->fetchInstruction()->setState(ExecState::IF);
     auto iMemBuf = _iMem->getBuffer();
-    iMemBuf->setInstruction(*(_iMem->fetchInstruction()));
+    iMemBuf->setInstruction(*fetched);
     qDebug() << "Fetching PC: " << _pc->getDisplayValue();
     _pc->increment();
     qDebug() << "New PC: " << _pc->getDisplayValue();
