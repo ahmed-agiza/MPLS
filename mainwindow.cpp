@@ -251,7 +251,7 @@ void MainWindow::on_actionNextCycle_triggered(){
     //simulator->nextCycle();
     //ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
     core->executeCycle();
-    ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
+    ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(/*simulator->getCurrentCycle()*/core->getCycle()));
 }
 
 void MainWindow::on_actionStopSimulation_triggered(){

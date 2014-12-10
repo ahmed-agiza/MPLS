@@ -88,7 +88,7 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>350</height>
+                  <height>320</height>
                  </size>
                 </property>
                 <property name="currentIndex">
@@ -121,7 +121,7 @@
                 <property name="minimumSize">
                  <size>
                   <width>550</width>
-                  <height>0</height>
+                  <height>250</height>
                  </size>
                 </property>
                 <property name="toolTip">
@@ -172,10 +172,8 @@
     <property name="title">
      <string>Assembly</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="actionStartSimulation"/>
+    <addaction name="actionAssemble"/>
     <addaction name="actionNextCycle"/>
-    <addaction name="actionStopSimulation"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuAssembly"/>

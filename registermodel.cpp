@@ -25,7 +25,7 @@ int RegisterModel::columnCount(const QModelIndex &) const{
 QVariant RegisterModel::data(const QModelIndex &index, int role) const{
     if (!index.isValid() || index.row() >= rowCount(QModelIndex()) || index.row() < 0 || index.column() < 0 || index.column() > 3)
         return QVariant();
-
+    qDebug() << _pc << "  " << _pc->getValue() << "  " << _pc->getDisplayValue();
     if (role == Qt::DisplayRole){
         if (index.column() == 0){
             if (index.row() != 32)
@@ -41,7 +41,7 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const{
             if (index.row() != 32)
                 return "0x" + getPaddedHex(_regFile->_registers.at(index.row())->getValue(), 32);
             else if (_pc)
-                return "0x" + _pc->getDisplayValue();
+                return "0x" +  getPaddedHex(_pc->getDisplayValue(), 32);;
         }
             return QVariant();
     }

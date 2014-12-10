@@ -18,7 +18,7 @@ int BuffersModel::columnCount(const QModelIndex &) const{
 }
 
 QVariant BuffersModel::data(const QModelIndex &index, int role) const{
-    if (!index.isValid() || index.row() >= rowCount(QModelIndex()) || index.row() < 0 || index.column() < 0 || index.column() > 3)
+    if (!index.isValid() || index.row() >= rowCount(QModelIndex()) || index.row() < 0 || index.column() < 0 || index.column() > 4)
         return QVariant();
 
     if (role == Qt::DisplayRole){
@@ -42,6 +42,8 @@ QVariant BuffersModel::data(const QModelIndex &index, int role) const{
                 return _ifid->getProgramCounter().getDisplayValue();
             else if (index.row() == 1)
                 return _ifid->getInstruction().toString();
+            else
+                return "N/A";
         }else if (index.column() == 2){
             if (index.row() == 0)
                 return _idex->getProgramCounter().getDisplayValue();
@@ -51,6 +53,8 @@ QVariant BuffersModel::data(const QModelIndex &index, int role) const{
                 return _idex->getRegisterA().getValue();
             else if (index.row() == 3)
                 return _idex->getRegisterB().getValue();
+            else
+                return "N/A";
         }else if (index.column() == 3){
             if (index.row() < 3)
                 return "N/A";
@@ -65,6 +69,8 @@ QVariant BuffersModel::data(const QModelIndex &index, int role) const{
                 return _exmem->getALUResult();
             else if (index.row() == 5)
                 return _exmem->getZeroFlag();
+            else
+                return "N/A";
         }else if (index.column() == 4){
             if (index.row() < 4 || index.row() == 5)
                 return "N/A";
@@ -72,6 +78,8 @@ QVariant BuffersModel::data(const QModelIndex &index, int role) const{
                 return _memwb->getALUResult();
             else if (index.row() == 6)
                 return _memwb->getMemoryData();
+            else
+                return "N/A";
         }
             return QVariant();
     }
