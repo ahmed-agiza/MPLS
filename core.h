@@ -24,6 +24,9 @@ class Core : public Component
     unsigned int _cycle;
     QList < Instruction *> _instrQueue;
 
+    QMap<Instruction *, int> _instructionNumbers;
+    int _indexInstr, _stalls;
+
     bool _if();
 
     void _constructComponents();
@@ -63,6 +66,7 @@ signals:
     void forwarded(QString);
     void stalled();
     void simulationComplete();
+    void currentStage(QString, int, int, Instruction *);
 
 public slots:
 

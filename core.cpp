@@ -4,7 +4,7 @@
 
 
 Core::Core(QObject * parent, QList<Instruction *> instructions)
-    :Component(parent), _instructions(instructions), _cycle(0){
+    :Component(parent), _instructions(instructions), _cycle(0), _indexInstr(0), _stalls(0){
     _constructComponents();
 }
 
@@ -49,6 +49,7 @@ bool Core::_execute(Instruction *instruction, int &index){
     switch (instruction->getState()){
     case ExecState::IF:{
         qDebug() << "ID: " << *instruction;
+        emit currentStage("ID", _cycle + _stalls, _instructionNumbers[instruction], instruction);
         //Decode:
         if (instruction->isRInstruction()){
             qDebug() << "$rs = " << instruction->getRegisterRs();
@@ -99,6 +100,7 @@ bool Core::_execute(Instruction *instruction, int &index){
     }case ExecState::ID:{
         //Execute:
          qDebug() << "EX: " << *instruction;
+        emit currentStage("EX", _cycle + _stalls, _instructionNumbers[instruction], instruction);
         if (instruction->isRInstruction()){
             qDebug() << "Operand A: " << _regFile->getReadDataA();
             qDebug() << "Operand B: " << _regFile->getReadDataB();
@@ -113,6 +115,17 @@ bool Core::_execute(Instruction *instruction, int &index){
                     qDebug() << "Correct value: " << aluBuf->getALUResult();
                     operandA = aluBuf->getALUResult();
                     emit forwarded("Forwared the correct value: " + QString::number(aluBuf->getALUResult()));
+                }else if (aluBuf->getLastInstruction() == TargetType::MEMORY){
+                    qDebug() << "The hazard source is memory";
+                    qDebug() << "=+=+=++====+++++Stalling=+=+=++====+++++";
+                    qDebug() << "XXXX";
+                    aluBuf->setLastInstruction(TargetType::STALLED);
+                    emit currentStage("Stall", _cycle + _stalls, _instructionNumbers[instruction], instruction);
+                    _stalls++;
+                    return false;
+                }else{
+                    qDebug() << "After stalling, correct value: " << memBuf->getMemoryData();
+                    operandA = memBuf->getMemoryData();
                 }
             }
             if (aluBuf->getTargetRegisterNumber() == instruction->getRegisterRt()){
@@ -123,8 +136,16 @@ bool Core::_execute(Instruction *instruction, int &index){
                     operandB = aluBuf->getALUResult();
                     emit forwarded("Forwared the correct value: " + QString::number(aluBuf->getALUResult()));
 
-                }else{
+                }else if (aluBuf->getLastInstruction() == TargetType::MEMORY){
                     qDebug() << "The hazard source is memory";
+                    qDebug() << "=+=+=++====+++++Stalling=+=+=++====+++++";
+                    aluBuf->setLastInstruction(TargetType::STALLED);
+                    emit currentStage("Stalll", _cycle + _stalls, _instructionNumbers[instruction], instruction);
+                    _stalls++;
+                    return false;
+                }else{
+                    qDebug() << "After stalling, correct value: " << memBuf->getMemoryData();
+                    operandB = memBuf->getMemoryData();
                 }
             }
             qDebug() << "Correct Operand A: " << operandA;
@@ -175,6 +196,8 @@ bool Core::_execute(Instruction *instruction, int &index){
                     qDebug() << "The hazard source is memory";
                     qDebug() << "=+=+=++====+++++Stalling=+=+=++====+++++";
                     aluBuf->setLastInstruction(TargetType::STALLED);
+                    emit currentStage("Stall", _cycle + _stalls, _instructionNumbers[instruction], instruction);
+                    _stalls++;
                     return false;
                 }else{
                     qDebug() << "After stalling, correct value: " << memBuf->getMemoryData();
@@ -192,24 +215,51 @@ bool Core::_execute(Instruction *instruction, int &index){
                 break;
 
             case InstructionName::BLE:
+            {
                 _ALU->setOperation(Operation::LE);
-                qDebug() << "BLE: Current PC: " << _pc->getValue();
-                qDebug() << "BLE: Buffered PC: " << regBuf->getProgramCounter().getValue();
-                qDebug() << "Index before: " << index;
-                if (_ALU->getResult()){
-                    _pc->setValue(regBuf->getProgramCounter().getValue() + instruction->getImmediate());
-                    for(int i = index - 1; i >= 0; i--){
-                        qDebug() << "Before dismiss: ";  printQueue(_instrQueue);
-
-                        if(i < _instrQueue.size()){
-                            _instrQueue.at(i)->setState(ExecState::UNDEF);
-                            _instrQueue.removeAt(i);
-                            index--;
-                            qDebug() << "New queue: ";
-                            printQueue(_instrQueue);
-                        }
+                _regFile->setReadAddressB(instruction->getRegisterRt());
+                int operandBLE = _regFile->getReadDataB();
+                if (aluBuf->getTargetRegisterNumber() == instruction->getRegisterRt()){
+                    qDebug() << "*/*/*/*/*/*/*/*/*/*Rs is already being modified*/*/*/*/*/*/*/*/*/*";
+                    if (aluBuf->getLastInstruction() == TargetType::REGISTER){
+                        qDebug() << "Register: "  << instruction->getRegisterRt();
+                        qDebug() << "Old value: " << _regFile->getReadDataB();
+                        qDebug() << "Correct value: " << aluBuf->getALUResult();
+                        operandBLE = aluBuf->getALUResult();
+                        emit forwarded("Forwared the correct value: " + QString::number(aluBuf->getALUResult()));
+                    }else if (aluBuf->getLastInstruction() == TargetType::MEMORY){
+                        qDebug() << "The hazard source is memory";
+                        qDebug() << "=+=+=++====+++++Stalling=+=+=++====+++++";
+                        aluBuf->setLastInstruction(TargetType::STALLED);
+                        emit currentStage("Stall", _cycle + _stalls, _instructionNumbers[instruction], instruction);
+                        _stalls++;
+                        return false;
+                    }else{
+                        qDebug() << "After stalling, correct value: " << memBuf->getMemoryData();
+                        operandA = memBuf->getMemoryData();
                     }
-                    qDebug() << "New index: " << index;
+                }
+                    _ALU->setOperandB(operandBLE);
+                    qDebug() << "BLE: Current PC: " << _pc->getValue();
+                    qDebug() << "BLE: Buffered PC: " << regBuf->getProgramCounter().getValue();
+                    qDebug() << "Index before: " << index;
+                    qDebug() << _ALU->getOperandA();
+                    qDebug() << _ALU->getOperandB();
+                    if (_ALU->getResult()){
+                        _pc->setValue(regBuf->getProgramCounter().getValue() + instruction->getImmediate());
+                        for(int i = index - 1; i >= 0; i--){
+                            qDebug() << "Before dismiss: ";  printQueue(_instrQueue);
+
+                            if(i < _instrQueue.size()){
+                                _instrQueue.at(i)->setState(ExecState::UNDEF);
+                                _instrQueue.removeAt(i);
+                                index--;
+                                qDebug() << "New queue: ";
+                                printQueue(_instrQueue);
+                            }
+                        }
+                        qDebug() << "New index: " << index;
+                    }
                 }break;
             case InstructionName::LW:
                  aluBuf->setTargetRegisterNumber(instruction->getRegisterRt());
@@ -260,6 +310,7 @@ bool Core::_execute(Instruction *instruction, int &index){
     }case ExecState::EX:{
         //Memory Read/Write:
         qDebug() << "MEM: " << *instruction;
+        emit currentStage("MEM", _cycle + _stalls, _instructionNumbers[instruction], instruction);
         if (instruction->isRInstruction()){
             qDebug() << "R-Instruction has no effect on memory";
             memBuf->setALUResult(aluBuf->getALUResult());
@@ -312,6 +363,7 @@ bool Core::_execute(Instruction *instruction, int &index){
     }case ExecState::MEM:{
         //Regfile WriteBack:
         qDebug() << "WB: " << *instruction;
+        emit currentStage("WB", _cycle + _stalls, _instructionNumbers[instruction], instruction);
         if (instruction->isRInstruction()){
             if (instruction->getName() == InstructionName::ADD || instruction->getName() == InstructionName::XOR || instruction->getName() == InstructionName::SLT){
                 qDebug() << "Write Data: " << memBuf->getALUResult();
@@ -485,6 +537,7 @@ bool Core::_if(){
     qDebug() << "*+*+*+*Fetch*+*+*+*";
     auto fetched = _iMem->fetchInstruction();
     _instrQueue.prepend(fetched);
+    _instructionNumbers[fetched] = _indexInstr++;
     qDebug() << "Fetched: " << *(fetched);
     _iMem->fetchInstruction()->setState(ExecState::IF);
     auto iMemBuf = _iMem->getBuffer();
@@ -493,6 +546,7 @@ bool Core::_if(){
     _pc->increment();
     qDebug() << "New PC: " << _pc->getDisplayValue();
     iMemBuf->setProgramCounter(*_pc);
+    emit currentStage("IF", _cycle + _stalls, _instructionNumbers[fetched], fetched);
     return true;
 }
 

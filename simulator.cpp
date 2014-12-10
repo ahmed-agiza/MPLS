@@ -106,10 +106,10 @@ bool Simulator::parseInstructions(){
                                                  0)
                                  );
 
-            if(symbolTable.contains(instructionFormats[0].cap(5))){
-                _instructions[_instructions.size() - 1]->setImmediate(symbolTable[instructionFormats[0].cap(5)] - (instructionNumber + 1));
+            if(symbolTable.contains(instructionFormats[3].cap(5))){
+                _instructions[_instructions.size() - 1]->setImmediate(symbolTable[instructionFormats[3].cap(5)] - (instructionNumber + 1));
             }else{
-                missingBranches.append(_MissingLabel(instructionFormats[0].cap(5), instructionNumber, lineNumber));
+                missingBranches.append(_MissingLabel(instructionFormats[3].cap(5), instructionNumber, lineNumber));
             }
             instructionNumber++;
         }else if(instructionFormats[4].indexIn(line) == 0){ // jr
@@ -136,10 +136,10 @@ bool Simulator::parseInstructions(){
                                                  0)
                                  );
 
-            if(symbolTable.contains(instructionFormats[0].cap(3))){
-                _instructions[_instructions.size() - 1]->setImmediate(symbolTable[instructionFormats[0].cap(3)]);
+            if(symbolTable.contains(instructionFormats[5].cap(3))){
+                _instructions[_instructions.size() - 1]->setImmediate(symbolTable[instructionFormats[5].cap(3)]);
             }else{
-                missingJumps.append(_MissingLabel(instructionFormats[0].cap(3), instructionNumber, lineNumber));
+                missingJumps.append(_MissingLabel(instructionFormats[5].cap(3), instructionNumber, lineNumber));
             }
             instructionNumber++;
         }else if(instructionFormats[6].indexIn(line) == 0){ // j jal

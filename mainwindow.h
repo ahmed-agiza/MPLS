@@ -28,7 +28,7 @@ class MainWindow : public QMainWindow
     bool isFileModified;
     QString openFilePath;
     static QList<Instruction *> emptyInsList;
-
+    QStringList pplHeader;
 protected:
     void closeEvent(QCloseEvent *);
     bool eventFilter(QObject *, QEvent *);
@@ -71,6 +71,8 @@ private slots:
     void simulationForwarded(QString);
     void simulationComplete();
     void appendErrorMessage(QString);
+
+    void addStage(QString, int, int, Instruction *);
 
 };
 

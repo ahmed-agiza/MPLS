@@ -1,6 +1,7 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -24,8 +25,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tblAssembled->horizontalHeader()->setStretchLastSection(true);
     ui->tblRegisters->horizontalHeader()->setStretchLastSection(true);
     ui->tblMemory->horizontalHeader()->setStretchLastSection(true);
-    //qDebug() << *(new Instruction(this, INS))
 
+    ui->tblPpl->setColumnCount(0);
+    ui->tblPpl->setRowCount(0);
+    pplHeader.clear();
+    ui->tblPpl->setHorizontalHeaderLabels(pplHeader);
 
 #ifdef TEST_MODE
 
@@ -90,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     core = new Core(this, *temp);
     connect(core, SIGNAL(stalled()), this, SLOT(simulationStalled()));
     connect(core, SIGNAL(forwarded(QString)), this, SLOT(simulationForwarded(QString)));
+    connect(core, SIGNAL(currentStage(QString,int,int,Instruction*)), this, SLOT(addStage(QString,int,int,Instruction*)));
     ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
     ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
     ui->tblPipieline->setModel(new BuffersModel(this, core->getIFID(), core->getIDEX(), core->getEXMEM(), core->getMEMWB()));
@@ -254,9 +259,16 @@ void MainWindow::on_actionAssemble_triggered(){
         instr = instr.trimmed();
     if (simulator)
         delete simulator;
+
+    ui->tblPpl->setColumnCount(0);
+    ui->tblPpl->setRowCount(0);
+    pplHeader.clear();
+    ui->tblPpl->setHorizontalHeaderLabels(pplHeader);
+
     simulator = new Simulator(this, instructions);
     bool parsed = simulator->parseInstructions();
     ui->actionNextCycle->setEnabled(parsed);
+    statusBar()->clearMessage();
     if (parsed){
         ui->txtConsole->clear();
         core = simulator->getCore();
@@ -269,6 +281,7 @@ void MainWindow::on_actionAssemble_triggered(){
         connect(core, SIGNAL(stalled()), this, SLOT(simulationStalled()));
         connect(core, SIGNAL(forwarded(QString)), this, SLOT(simulationForwarded(QString)));
         connect(core, SIGNAL(simulationComplete()), this, SLOT(simulationComplete()));
+        connect(core, SIGNAL(currentStage(QString,int,int,Instruction*)), this, SLOT(addStage(QString,int,int,Instruction*)));
         ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
     }else{
          qDebug() << "Parsing error";
@@ -293,6 +306,7 @@ void MainWindow::on_actionNextCycle_triggered(){
     //simulator->nextCycle();
     //ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
     //core->executeCycle();
+    statusBar()->clearMessage();
     auto temp = ui->tblQueue->model();
     ui->tblQueue->setModel(new InstructioQueueModel(this, &(core->_instrQueue)));
     if (temp)
@@ -317,12 +331,16 @@ void MainWindow::fileModified(){
 }
 
 void MainWindow::simulationStalled(){
+    qDebug() << "Stall!!";
+    statusBar()->clearMessage();
     statusBar()->showMessage("Pipeline Stalled", 3000);
 
 }
 
 void MainWindow::simulationForwarded(QString msg){
-    statusBar()->showMessage(msg, 3000);
+    qDebug() << "Forwarded: " << msg;
+    statusBar()->clearMessage();
+    statusBar()->showMessage(msg);
 }
 
 void MainWindow::simulationComplete(){
@@ -333,6 +351,26 @@ void MainWindow::appendErrorMessage(QString msg){
     qDebug() << msg;
     ui->txtConsole->setText(ui->txtConsole->toPlainText() + "\n" + msg);
     //ui->txtConsole->append(msg + "\n");
+}
+
+void MainWindow::addStage(QString stage, int cycle, int instructionNumber, Instruction *instr){
+    qDebug() <<"ADD STAGE: " << stage << "  -  " << cycle << "  -  " << instructionNumber << "  -   " << instr->toString();
+    if(cycle >= ui->tblPpl->columnCount()){
+        qDebug() << "Adding column";
+        ui->tblPpl->insertColumn(ui->tblPpl->columnCount());
+        pplHeader << "Cycle " + QString::number(cycle);
+        ui->tblPpl->setHorizontalHeaderLabels(pplHeader);
+    }
+    if (instructionNumber >= ui->tblPpl->rowCount()){
+        qDebug() << "Adding row";
+        ui->tblPpl->insertRow(ui->tblPpl->rowCount());
+    }
+    qDebug() << ui->tblPpl->rowCount();
+    qDebug() << ui->tblPpl->columnCount();
+
+    ui->tblPpl->setItem(instructionNumber, cycle, new QTableWidgetItem(stage + ": " + instr->toString()));
+    ui->tblPpl->resizeColumnsToContents();
+
 }
 
 void MainWindow::enableSimulation(){

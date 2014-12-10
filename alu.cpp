@@ -52,7 +52,7 @@ int ALU::getResult() const{
         return (_operandA < _operandB);
         break;
     case Operation::LE:
-        return (_operandA <= _operandB);
+        return (_operandA >= _operandB);
         break;
     case Operation::NOP:
         return 0;

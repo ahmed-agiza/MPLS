@@ -26,7 +26,7 @@
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tabCodeEditor">
          <attribute name="title">
@@ -60,6 +60,9 @@
                   <height>420</height>
                  </size>
                 </property>
+                <property name="toolTip">
+                 <string>Instructions Memory</string>
+                </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QAbstractScrollArea::AdjustIgnored</enum>
                 </property>
@@ -72,13 +75,20 @@
                 </property>
                 <item>
                  <widget class="QTextEdit" name="txtConsole">
+                  <property name="toolTip">
+                   <string>Log</string>
+                  </property>
                   <property name="readOnly">
                    <bool>true</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTableView" name="tblQueue"/>
+                 <widget class="QTableView" name="tblQueue">
+                  <property name="toolTip">
+                   <string>Instructions Queue</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -103,7 +113,11 @@
                  </attribute>
                  <layout class="QVBoxLayout" name="verticalLayout_8">
                   <item>
-                   <widget class="QTableView" name="tblRegisters"/>
+                   <widget class="QTableView" name="tblRegisters">
+                    <property name="toolTip">
+                     <string>Register File</string>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -113,7 +127,11 @@
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout">
                   <item row="0" column="0">
-                   <widget class="QTableView" name="tblMemory"/>
+                   <widget class="QTableView" name="tblMemory">
+                    <property name="toolTip">
+                     <string>Data Memory</string>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </widget>
@@ -128,13 +146,23 @@
                  </size>
                 </property>
                 <property name="toolTip">
-                 <string>Pipeline Stages</string>
+                 <string>Buffers</string>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabPpl">
+         <attribute name="title">
+          <string>Pipeline Stages</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QTableWidget" name="tblPpl"/>
           </item>
          </layout>
         </widget>
