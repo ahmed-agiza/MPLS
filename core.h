@@ -49,6 +49,11 @@ public:
 
     QList< int > getMemoryDump(int, int) const;
 
+    IFIDBuffer *getIFID() const;
+    IDEXBuffer *getIDEX() const;
+    EXMEMBuffer *getEXMEM() const;
+    MEMWBBuffer *getMEMWB() const;
+
     ~Core();
 
     void _id(bool proceed, Instruction *instruction);

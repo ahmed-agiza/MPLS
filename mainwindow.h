@@ -9,6 +9,7 @@
 #include "registermodel.h"
 #include "memorymodel.h"
 #include "instructionmodel.h"
+#include "buffersmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -66,6 +67,7 @@ private slots:
 
     void simulationStalled();
     void simulationForwarded(QString);
+    void appendErrorMessage(QString);
 
 };
 

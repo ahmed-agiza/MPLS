@@ -445,6 +445,22 @@ QList< int> Core::getMemoryDump(int lowerBound, int higherBound) const{
     return values;
 }
 
+IFIDBuffer *Core::getIFID() const{
+    return _iMem->getBuffer();
+}
+
+IDEXBuffer *Core::getIDEX() const{
+    return _regFile->getBuffer();
+}
+
+EXMEMBuffer *Core::getEXMEM() const{
+    return _ALU->getBuffer();
+}
+
+MEMWBBuffer *Core::getMEMWB() const{
+    return _dMem->getBuffer();
+}
+
 bool Core::_if(){
     if(_pc->getValue() >= _iMem->getMemorySize()){
         qDebug() << "PC is at last instruction.";

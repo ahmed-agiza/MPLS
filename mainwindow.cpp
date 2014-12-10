@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(core, SIGNAL(forwarded(QString)), this, SLOT(simulationForwarded(QString)));
     ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
     ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
+    ui->tblPipieline->setModel(new BuffersModel(this, core->getIFID(), core->getIDEX(), core->getEXMEM(), core->getMEMWB()));
     //**************End test**************************
 
 
@@ -237,7 +238,7 @@ void MainWindow::on_actionAssemble_triggered(){
     if (simulator)
         delete simulator;
     simulator = new Simulator(this, instructions);
-    simulator->parseInstructions();
+    ui->actionNextCycle->setEnabled(simulator->parseInstructions());
 }
 
 void MainWindow::on_actionStartSimulation_triggered(){
@@ -275,6 +276,10 @@ void MainWindow::simulationStalled(){
 
 void MainWindow::simulationForwarded(QString msg){
     statusBar()->showMessage(msg, 3000);
+}
+
+void MainWindow::appendErrorMessage(QString msg){
+    ui->txtConsole->append(msg + "\n");
 }
 
 void MainWindow::enableSimulation(){

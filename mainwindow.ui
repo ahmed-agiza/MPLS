@@ -118,6 +118,12 @@
               </item>
               <item>
                <widget class="QTableView" name="tblPipieline">
+                <property name="minimumSize">
+                 <size>
+                  <width>550</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="toolTip">
                  <string>Pipeline Stages</string>
                 </property>
@@ -189,9 +195,7 @@
    <addaction name="actionSaveAs"/>
    <addaction name="separator"/>
    <addaction name="actionAssemble"/>
-   <addaction name="actionStartSimulation"/>
    <addaction name="actionNextCycle"/>
-   <addaction name="actionStopSimulation"/>
    <addaction name="separator"/>
    <addaction name="actionClose"/>
   </widget>
@@ -255,6 +259,9 @@
    </property>
   </action>
   <action name="actionNextCycle">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>&amp;Next Cycle</string>
    </property>
@@ -263,6 +270,9 @@
    </property>
   </action>
   <action name="actionStopSimulation">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>St&amp;op Simulation</string>
    </property>

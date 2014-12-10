@@ -19,7 +19,7 @@ int RegisterModel::rowCount(const QModelIndex &) const{
 }
 
 int RegisterModel::columnCount(const QModelIndex &) const{
-    return 4;
+    return 3;
 }
 
 QVariant RegisterModel::data(const QModelIndex &index, int role) const{
@@ -42,12 +42,6 @@ QVariant RegisterModel::data(const QModelIndex &index, int role) const{
                 return "0x" + getPaddedHex(_regFile->_registers.at(index.row())->getValue(), 32);
             else if (_pc)
                 return "0x" + _pc->getDisplayValue();
-        }else if (index.column() == 3){
-            if (index.row() != 32)
-                return (_regFile->_registers.at(index.row())->getState() == RegisterState::WRITING)? QString("Writing") : QString("Stable");
-            else if (_pc)
-                return "Constant";
-
         }
             return QVariant();
     }

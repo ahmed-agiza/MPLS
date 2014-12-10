@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     syntaxhl.cpp \
     registermodel.cpp \
     instructionmodel.cpp \
-    memorymodel.cpp
+    memorymodel.cpp \
+    buffersmodel.cpp
 
 HEADERS  += mainwindow.h \
     component.h \
@@ -55,7 +56,8 @@ HEADERS  += mainwindow.h \
     syntaxhl.h \
     registermodel.h \
     instructionmodel.h \
-    memorymodel.h
+    memorymodel.h \
+    buffersmodel.h
 
 FORMS    += mainwindow.ui
 
