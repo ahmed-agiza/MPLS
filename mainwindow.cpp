@@ -269,9 +269,10 @@ void MainWindow::on_actionAssemble_triggered(){
         connect(core, SIGNAL(stalled()), this, SLOT(simulationStalled()));
         connect(core, SIGNAL(forwarded(QString)), this, SLOT(simulationForwarded(QString)));
         connect(core, SIGNAL(simulationComplete()), this, SLOT(simulationComplete()));
+        ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
     }else{
          qDebug() << "Parsing error";
-        QStringList errors = simulator->getErrors();
+         QStringList errors = simulator->getErrors();
         ui->txtConsole->clear();
         foreach(const QString err, errors){
             appendErrorMessage(err);
@@ -329,7 +330,9 @@ void MainWindow::simulationComplete(){
 }
 
 void MainWindow::appendErrorMessage(QString msg){
-    ui->txtConsole->append(msg + "\n");
+    qDebug() << msg;
+    ui->txtConsole->setText(ui->txtConsole->toPlainText() + "\n" + msg);
+    //ui->txtConsole->append(msg + "\n");
 }
 
 void MainWindow::enableSimulation(){

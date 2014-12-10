@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/assemble2.png</file>
+        <file>icons/close.png</file>
+        <file>icons/moveStep2.png</file>
+        <file>icons/newfile.png</file>
+        <file>icons/openproject.png</file>
+        <file>icons/save.png</file>
+        <file>icons/saveas.png</file>
+    </qresource>
+</RCC>

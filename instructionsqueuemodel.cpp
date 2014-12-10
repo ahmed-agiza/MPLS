@@ -12,7 +12,6 @@ void InstructioQueueModel::setInstructionsList(QList<Instruction *> *instruction
 }
 
 int InstructioQueueModel::rowCount(const QModelIndex &) const{
-    qDebug() << "Size: " << _instructionsList->size();
     return _instructionsList->size();
 }
 

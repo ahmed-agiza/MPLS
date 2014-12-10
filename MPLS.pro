@@ -66,4 +66,5 @@ FORMS    += mainwindow.ui
 QMAKE_CXXFLAGS += -std=c++11
 
 RESOURCES += \
-    qdarkstyle/style.qrc
+    qdarkstyle/style.qrc \
+    Icons.qrc

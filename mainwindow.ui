@@ -202,6 +202,10 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew">
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/newfile.png</normaloff>:/icons/icons/newfile.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;New</string>
    </property>
@@ -210,6 +214,10 @@
    </property>
   </action>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/openproject.png</normaloff>:/icons/icons/openproject.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Open</string>
    </property>
@@ -218,6 +226,10 @@
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/save.png</normaloff>:/icons/icons/save.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Save</string>
    </property>
@@ -226,6 +238,10 @@
    </property>
   </action>
   <action name="actionSaveAs">
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/saveas.png</normaloff>:/icons/icons/saveas.png</iconset>
+   </property>
    <property name="text">
     <string>Sa&amp;ve As</string>
    </property>
@@ -234,6 +250,10 @@
    </property>
   </action>
   <action name="actionClose">
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/close.png</normaloff>:/icons/icons/close.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Close</string>
    </property>
@@ -247,6 +267,10 @@
    </property>
   </action>
   <action name="actionAssemble">
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/assemble2.png</normaloff>:/icons/icons/assemble2.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Assemble</string>
    </property>
@@ -262,6 +286,10 @@
   <action name="actionNextCycle">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="Icons.qrc">
+     <normaloff>:/icons/icons/moveStep2.png</normaloff>:/icons/icons/moveStep2.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Next Cycle</string>
@@ -283,6 +311,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="Icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
