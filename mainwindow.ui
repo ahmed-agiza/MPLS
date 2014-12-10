@@ -53,17 +53,10 @@
                <number>10</number>
               </property>
               <item>
-               <widget class="QGroupBox" name="groupBox">
-                <property name="title">
-                 <string>GroupBox</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QTableView" name="tblAssembled">
                 <property name="minimumSize">
                  <size>
-                  <width>900</width>
+                  <width>670</width>
                   <height>420</height>
                  </size>
                 </property>
@@ -73,11 +66,21 @@
                </widget>
               </item>
               <item>
-               <widget class="QTextEdit" name="txtConsole">
-                <property name="readOnly">
-                 <bool>true</bool>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <property name="topMargin">
+                 <number>0</number>
                 </property>
-               </widget>
+                <item>
+                 <widget class="QTextEdit" name="txtConsole">
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QTableView" name="tblQueue"/>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>

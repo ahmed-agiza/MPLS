@@ -2,7 +2,8 @@
 
 
 EXMEMBuffer::EXMEMBuffer(QObject *parent, Component *sourceComponent)
-    :Buffer(parent, sourceComponent), _targetRegisterNumber(-1), _lastInstruction(TargetType::UNDEF){
+    :Buffer(parent, sourceComponent), _targetRegisterNumber(-1), _lastInstruction(TargetType::UNDEF),
+      _branchTarget(0), _ALUResult(0), _zeroFlag(0){
     
 }
 

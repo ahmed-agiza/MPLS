@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     registermodel.cpp \
     instructionmodel.cpp \
     memorymodel.cpp \
-    buffersmodel.cpp
+    buffersmodel.cpp \
+    instructionsqueuemodel.cpp
 
 HEADERS  += mainwindow.h \
     component.h \
@@ -57,7 +58,8 @@ HEADERS  += mainwindow.h \
     registermodel.h \
     instructionmodel.h \
     memorymodel.h \
-    buffersmodel.h
+    buffersmodel.h \
+    instructionsqueuemodel.h
 
 FORMS    += mainwindow.ui
 

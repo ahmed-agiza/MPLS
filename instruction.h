@@ -21,7 +21,7 @@ enum class ExecState {UNDEF, IF, ID, EX, MEM, WB, COMP};
 
 #define INSTR_FUNC std::function<INSTR_FUNC_TEMPL>
 
-#define RCHECK _name == InstructionName::ADD || _name == InstructionName::JR || _name == InstructionName::SLT
+#define RCHECK _name == InstructionName::ADD || _name == InstructionName::JR || _name == InstructionName::SLT || _name == InstructionName::XOR
 
 #define ICHECK _name == InstructionName::ADDI || _name == InstructionName::BLE || _name == InstructionName::LW || _name == InstructionName::SW
 

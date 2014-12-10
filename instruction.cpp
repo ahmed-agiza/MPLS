@@ -21,6 +21,7 @@ Instruction::operator QString(){
 void Instruction::initializeNamesMap(){
     _instrNames[InstructionName::ADD] = "ADD";
     _instrNames[InstructionName::ADDI] = "ADDI";
+    _instrNames[InstructionName::XOR] = "XOR";
     _instrNames[InstructionName::BLE] = "BLE";
     _instrNames[InstructionName::J] = "J";
     _instrNames[InstructionName::JAL] = "JAL";

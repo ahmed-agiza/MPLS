@@ -48,12 +48,12 @@ bool Simulator::parseInstructions(){
     QList<_MissingLabel> missingJumps;
     QList<_MissingLabel> missingBranches;
 
-    QList<_ParsingError> errorList;
+
     int instructionNumber = 0;
     int lineNumber = 0;
     foreach(QString line, _rawInstructions)
     {
-        line = line.toLower();
+        line = line.toLower().trimmed();
         qDebug() << line;
         if(instructionFormats[0].indexIn(line) == 0){   // add slt xor
             if(instructionFormats[0].cap(1).size() > 0){
@@ -64,8 +64,7 @@ bool Simulator::parseInstructions(){
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(4)),
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(5)),
                                                  Simulator::getRegisterNumber(instructionFormats[0].cap(3)),
-                                                 0,
-                                                 ExecState::IF
+                                                 0
                                                  )
                                  );
             instructionNumber++;
@@ -78,9 +77,8 @@ bool Simulator::parseInstructions(){
                                                  Simulator::getRegisterNumber(instructionFormats[1].cap(4)),
                                                  Simulator::getRegisterNumber(instructionFormats[1].cap(3)),
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[1].cap(5)),
-                                                 ExecState::IF
-                                                 )
+                                                 Simulator::getNumber(instructionFormats[1].cap(5))
+                                                )
                                  );
             instructionNumber++;
         }else if(instructionFormats[2].indexIn(line) == 0){ // sw lw
@@ -92,9 +90,8 @@ bool Simulator::parseInstructions(){
                                                  Simulator::getRegisterNumber(instructionFormats[2].cap(5)),
                                                  Simulator::getRegisterNumber(instructionFormats[2].cap(3)),
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[2].cap(4)),
-                                                 ExecState::IF
-                                                 )
+                                                 Simulator::getNumber(instructionFormats[2].cap(4))
+                                                )
                                  );
             instructionNumber++;
         }else if(instructionFormats[3].indexIn(line) == 0){ // ble
@@ -106,9 +103,7 @@ bool Simulator::parseInstructions(){
                                                  Simulator::getRegisterNumber(instructionFormats[3].cap(4)),
                                                  Simulator::getRegisterNumber(instructionFormats[3].cap(3)),
                                                  0,
-                                                 0,
-                                                 ExecState::IF
-                                                 )
+                                                 0)
                                  );
 
             if(symbolTable.contains(instructionFormats[0].cap(5))){
@@ -126,9 +121,7 @@ bool Simulator::parseInstructions(){
                                                  Simulator::getRegisterNumber(instructionFormats[4].cap(3)),
                                                  0,
                                                  0,
-                                                 0,
-                                                 ExecState::IF
-                                                 )
+                                                 0)
                                  );
             instructionNumber++;
         }else if(instructionFormats[5].indexIn(line) == 0){ // j jal
@@ -140,9 +133,7 @@ bool Simulator::parseInstructions(){
                                                  0,
                                                  0,
                                                  0,
-                                                 0,
-                                                 ExecState::IF
-                                                 )
+                                                 0)
                                  );
 
             if(symbolTable.contains(instructionFormats[0].cap(3))){
@@ -160,9 +151,7 @@ bool Simulator::parseInstructions(){
                                                  0,
                                                  0,
                                                  0,
-                                                 Simulator::getNumber(instructionFormats[6].cap(3)),
-                                                 ExecState::IF
-                                                 )
+                                                 Simulator::getNumber(instructionFormats[6].cap(3)))
                                  );
             instructionNumber++;
         }else if (instructionFormats[7].indexIn(line) == 0){
@@ -170,7 +159,7 @@ bool Simulator::parseInstructions(){
                 symbolTable[instructionFormats[7].cap(1)] = instructionNumber;
             }
         }else{
-            errorList.append(_ParsingError("Syntax Error", lineNumber));
+            _errorList.append(_ParsingError("Syntax Error", lineNumber));
         }
         lineNumber++;
     }
@@ -179,7 +168,7 @@ bool Simulator::parseInstructions(){
         if(symbolTable.contains(missingjmp.getLabel())){
             _instructions[missingjmp.getAddress()]->setImmediate(symbolTable[missingjmp.getLabel()]);
         }else{
-            errorList.append(_ParsingError(QString("Label \"") + missingjmp.getLabel() + "\" was not found", missingjmp.getLineNumber()));
+            _errorList.append(_ParsingError(QString("Label \"") + missingjmp.getLabel() + "\" was not found", missingjmp.getLineNumber()));
         }
     }
 
@@ -187,12 +176,12 @@ bool Simulator::parseInstructions(){
         if(symbolTable.contains(missingbrn.getLabel())){
             _instructions[missingbrn.getAddress()]->setImmediate(symbolTable[missingbrn.getLabel()] - (missingbrn.getAddress() + 1));
         }else{
-            errorList.append(_ParsingError(QString("Label \"") + missingbrn.getLabel() + "\" was not found", missingbrn.getLineNumber()));
+            _errorList.append(_ParsingError(QString("Label \"") + missingbrn.getLabel() + "\" was not found", missingbrn.getLineNumber()));
         }
     }
 
 
-    foreach (const _ParsingError& pError, errorList) {
+    foreach (const _ParsingError& pError, _errorList) {
         qDebug() << pError.getLineNumber() << "\t" << pError.getErrorMessage();
     }
 
@@ -202,7 +191,11 @@ bool Simulator::parseInstructions(){
         qDebug() << *ins;
     }
 
-    return (errorList.size() == 0);
+    if (!_errorList.size()){
+        _core = new Core(this, _instructions);
+    }
+
+    return (_errorList.size() == 0);
 }
 
 void Simulator::setValid(bool valid){
@@ -259,6 +252,14 @@ int Simulator::getCurrentCycle() const{
 
 Core *Simulator::getCore() const{
     return _core;
+}
+
+QStringList Simulator::getErrors() const{
+    QStringList errors;
+    for(const _ParsingError &err: _errorList){
+        errors.push_back(err.toString());
+    }
+    return errors;
 }
 
 Simulator::~Simulator(){

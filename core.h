@@ -29,6 +29,8 @@ class Core : public Component
     void _constructComponents();
 
     bool _execute(Instruction *, int &index);
+
+    friend class MainWindow;
 public:
 
     Core(QObject * = 0,  QList<Instruction *> = QList<Instruction *> ());
@@ -60,6 +62,7 @@ public:
 signals:
     void forwarded(QString);
     void stalled();
+    void simulationComplete();
 
 public slots:
 

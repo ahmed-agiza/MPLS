@@ -5,6 +5,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#define TEST_MODE
+#undef TEST_MODE
+
+QList<Instruction *> MainWindow::emptyInsList;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow), simulator(new Simulator(this)), editor(new CodeEditor(this)), simulationRunning(false), isFileModified(false){
     ui->setupUi(this);
@@ -19,7 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tblAssembled->horizontalHeader()->setStretchLastSection(true);
     ui->tblRegisters->horizontalHeader()->setStretchLastSection(true);
     ui->tblMemory->horizontalHeader()->setStretchLastSection(true);
+    //qDebug() << *(new Instruction(this, INS))
 
+
+#ifdef TEST_MODE
 
     //**************Dummy value for testing**************************
     QList<Instruction *> *temp = new QList<Instruction *>;
@@ -86,6 +94,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
     ui->tblPipieline->setModel(new BuffersModel(this, core->getIFID(), core->getIDEX(), core->getEXMEM(), core->getMEMWB()));
     //**************End test**************************
+#else
+    core = new Core(this);
+    ui->tblAssembled->setModel(new InstructionModel(this, &emptyInsList));
+    ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
+    ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
+    ui->tblPipieline->setModel(new BuffersModel(this, core->getIFID(), core->getIDEX(), core->getEXMEM(), core->getMEMWB()));
+    ui->tblAssembled->resizeColumnsToContents();
+    ui->tblQueue->setModel(new InstructioQueueModel(this, &emptyInsList));
+#endif
 
 
 }
@@ -238,7 +255,31 @@ void MainWindow::on_actionAssemble_triggered(){
     if (simulator)
         delete simulator;
     simulator = new Simulator(this, instructions);
-    ui->actionNextCycle->setEnabled(simulator->parseInstructions());
+    bool parsed = simulator->parseInstructions();
+    ui->actionNextCycle->setEnabled(parsed);
+    if (parsed){
+        ui->txtConsole->clear();
+        core = simulator->getCore();
+        ui->tblAssembled->setModel(new InstructionModel(this, &(simulator->_instructions)));
+        ui->tblRegisters->setModel(new RegisterModel(this, core->getRegisterFile(), core->getProgramCounter()));
+        ui->tblMemory->setModel(new MemoryModel(this, core->getDataMemory()));
+        ui->tblPipieline->setModel(new BuffersModel(this, core->getIFID(), core->getIDEX(), core->getEXMEM(), core->getMEMWB()));
+        ui->tblAssembled->resizeColumnsToContents();
+        ui->tblQueue->setModel(new InstructioQueueModel(this, &(core->_instrQueue)));
+        connect(core, SIGNAL(stalled()), this, SLOT(simulationStalled()));
+        connect(core, SIGNAL(forwarded(QString)), this, SLOT(simulationForwarded(QString)));
+        connect(core, SIGNAL(simulationComplete()), this, SLOT(simulationComplete()));
+    }else{
+         qDebug() << "Parsing error";
+        QStringList errors = simulator->getErrors();
+        ui->txtConsole->clear();
+        foreach(const QString err, errors){
+            appendErrorMessage(err);
+        }
+
+    }
+     ui->twdCode->setCurrentIndex(1);
+
 }
 
 void MainWindow::on_actionStartSimulation_triggered(){
@@ -250,8 +291,13 @@ void MainWindow::on_actionStartSimulation_triggered(){
 void MainWindow::on_actionNextCycle_triggered(){
     //simulator->nextCycle();
     //ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(simulator->getCurrentCycle()));
-    core->executeCycle();
-    ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(/*simulator->getCurrentCycle()*/core->getCycle()));
+    //core->executeCycle();
+    auto temp = ui->tblQueue->model();
+    ui->tblQueue->setModel(new InstructioQueueModel(this, &(core->_instrQueue)));
+    if (temp)
+        delete temp;
+    simulator->nextCycle();
+    ui->twdCode->setTabText(1, "Assembly - Cycle " + QString::number(/*simulator->getCurrentCycle()*/simulator->getCurrentCycle()));
 }
 
 void MainWindow::on_actionStopSimulation_triggered(){
@@ -276,6 +322,10 @@ void MainWindow::simulationStalled(){
 
 void MainWindow::simulationForwarded(QString msg){
     statusBar()->showMessage(msg, 3000);
+}
+
+void MainWindow::simulationComplete(){
+    statusBar()->showMessage("Simulation Complete", 3000);
 }
 
 void MainWindow::appendErrorMessage(QString msg){

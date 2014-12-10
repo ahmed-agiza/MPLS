@@ -10,6 +10,7 @@
 #include "memorymodel.h"
 #include "instructionmodel.h"
 #include "buffersmodel.h"
+#include "instructionsqueuemodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,9 +23,11 @@ class MainWindow : public QMainWindow
     Ui::MainWindow *ui;
     Simulator *simulator;
     CodeEditor *editor;
+    Core *core;
     bool simulationRunning;
     bool isFileModified;
     QString openFilePath;
+    static QList<Instruction *> emptyInsList;
 
 protected:
     void closeEvent(QCloseEvent *);
@@ -33,7 +36,6 @@ protected:
 public:
     explicit MainWindow(QWidget *parent = 0);
 
-    Core *core;
 
     bool saveActiveFile();
     bool saveActiveFileAs();
@@ -67,6 +69,7 @@ private slots:
 
     void simulationStalled();
     void simulationForwarded(QString);
+    void simulationComplete();
     void appendErrorMessage(QString);
 
 };

@@ -127,6 +127,8 @@ bool Core::_execute(Instruction *instruction, int &index){
                     qDebug() << "The hazard source is memory";
                 }
             }
+            qDebug() << "Correct Operand A: " << operandA;
+            qDebug() << "Correct Operand B: " << operandB;
             _ALU->setOperandA(operandA);
             _ALU->setOperandB(operandB);
             aluBuf->setTargetRegisterNumber(-1);
@@ -260,6 +262,8 @@ bool Core::_execute(Instruction *instruction, int &index){
         qDebug() << "MEM: " << *instruction;
         if (instruction->isRInstruction()){
             qDebug() << "R-Instruction has no effect on memory";
+            memBuf->setALUResult(aluBuf->getALUResult());
+            memBuf->setMemoryData(_dMem->getData());
             proceed = true;
         }else if (instruction->isIInstruction()){
             switch (instruction->getName()) {
@@ -282,7 +286,8 @@ bool Core::_execute(Instruction *instruction, int &index){
                 qDebug() << "Reg Write Data: " << _dMem->getData();
                 _regFile->setWriteData(_dMem->getData());
                 break;
-            }           
+            }
+            qDebug() << "Mem Buf = " << aluBuf->getALUResult();
             memBuf->setALUResult(aluBuf->getALUResult());
             memBuf->setMemoryData(_dMem->getData());
             proceed = true;
@@ -385,6 +390,8 @@ bool Core::_execute(Instruction *instruction, int &index){
 
 
 void Core::executeCycle(){
+
+    int execution = 0;
     qDebug() << "Cycle: " << _cycle;
     qDebug() << "Queue before fetching: ";
     printQueue(_instrQueue);
@@ -406,11 +413,16 @@ void Core::executeCycle(){
             //break;
         }else
             qDebug() << "PC after instruction: "<< *(inst) << ":  " << ((int)(*_pc));
+        execution++;
         //qDebug() << "Numbers Map: " << Register::_regNumbers;
         qDebug() << "====================";
     }
-    _if();
-    _cycle++;
+    execution += _if();
+    qDebug() << execution << " Operations.";
+    if (execution > 0)
+        _cycle++;
+    else
+        emit simulationComplete();
 }
 
 

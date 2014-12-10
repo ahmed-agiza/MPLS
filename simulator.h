@@ -30,6 +30,15 @@ class Simulator : public QObject
         _ParsingError(QString errorMessage, int lineNumber): _errorMessage(errorMessage), _lineNumber(lineNumber){}
         QString getErrorMessage() const{return _errorMessage;}
         int getLineNumber() const{return _lineNumber;}
+        operator QString(){
+            return toString();
+        }
+        QString toString() const{
+            QString result = QString::number(_lineNumber);
+            result += ":  ";
+            result += _errorMessage;
+            return result;
+        }
     };
 
     QStringList _rawInstructions;
@@ -40,6 +49,9 @@ class Simulator : public QObject
     int getRegisterNumber(QString s);
 
     QString getInstructionRegex(QString);
+    QList<_ParsingError> _errorList;
+
+    friend class MainWindow;
 public:
     Simulator(QObject * = 0, QStringList = QStringList());
 
@@ -56,6 +68,8 @@ public:
     int getCurrentCycle() const;
 
     Core *getCore() const;
+
+    QStringList getErrors() const;
 
     ~Simulator();
 

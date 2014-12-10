@@ -25,7 +25,6 @@ int RegisterModel::columnCount(const QModelIndex &) const{
 QVariant RegisterModel::data(const QModelIndex &index, int role) const{
     if (!index.isValid() || index.row() >= rowCount(QModelIndex()) || index.row() < 0 || index.column() < 0 || index.column() > 3)
         return QVariant();
-    qDebug() << _pc << "  " << _pc->getValue() << "  " << _pc->getDisplayValue();
     if (role == Qt::DisplayRole){
         if (index.column() == 0){
             if (index.row() != 32)
